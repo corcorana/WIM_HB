@@ -12,5 +12,5 @@ run WIM_HB_preproc_ICA
 run WIM_HB_preproc_ICA_rej
 
 % ECG preprocessing
-run WIM_HB_preproc_IBI
-
+run WIM_HB_preproc_ECG
+run WIM_HB_trim_ECG

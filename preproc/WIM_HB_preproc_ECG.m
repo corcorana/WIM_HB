@@ -7,6 +7,10 @@ run(['..' filesep 'localdef_WIM_ECG'])
 addpath(genpath(path_eeglab))
 addpath(genpath(path_heplab))
 
+proc_ibi = fullfile('..', filesep, 'ibi');
+if ~exist(proc_ibi, 'dir')
+    mkdir(proc_ibi)
+end
 
 %% batch process
 subjs = dlmread(['..' filesep 'subjs.txt']);
@@ -54,7 +58,7 @@ for ix = 1:length(subjs)
     checkRRI(ibs2, ECG2)
 
     % save corrected file
-    ECG2 = pop_saveset( ECG2, 'filename', [sname, '_ibi_corrected.set'], 'filepath', ['..' filesep 'ibi'] );
+    ECG2 = pop_saveset( ECG2, 'filename', [sname, '_ibi_corrected.set'], 'filepath', proc_ibi );
     
 
 end
