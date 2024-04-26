@@ -475,6 +475,6 @@ plot_grid(NULL,NULL, NULL,
           rel_widths = c(1, .1, 1),
           nrow = 8)
 
-ggsave('figure2.png', height = 25, width = 14, units = "cm", dpi=600)
+ggsave( filename = 'figure2.png', path = 'plots', height = 25, width = 14, units = "cm", dpi=600)
 
 
