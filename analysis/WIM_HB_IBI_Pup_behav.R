@@ -4,25 +4,22 @@ library(mgcViz)
 library(itsadug)
 library(emmeans)
 library(ggeffects)
-library(RColorBrewer)
-library(cowplot)
 
 # global settings
 options(contrasts = c("contr.treatment", "contr.poly"))
 emm_options(rg.limit = 1e6)
 
 theme_set(theme_classic())
-fsize = 8
+fsize = 10
 font_theme <- theme(
   axis.title.x = element_text(size = fsize+2, face="bold"),
   axis.title.y = element_text(size = fsize+2, face="bold"),
   axis.text.x = element_text(size = fsize),
   axis.text.y = element_text(size = fsize),
-  strip.text.x = element_text(size = fsize, face="bold"),
-  strip.text.y = element_text(size = fsize, face="bold"),
+  strip.text.x = element_text(size = fsize+2, face="bold"),
+  strip.text.y = element_text(size = fsize+2, face="bold"),
   legend.position = "none",  
   panel.border = element_rect(fill=NA),
-  strip.background = element_rect(fill = "gray80"),
   panel.background = element_rect(fill = "transparent",colour = NA),
   plot.background = element_rect(fill = "transparent",colour = NA)
 )
@@ -258,223 +255,144 @@ ibi.rv <- gam(RScv_30 ~ stim_type + ln_IBcv_30.s + IBzu_30 + s(subj_id, probe_nu
 
 
 
-### plots
-p_size <- 2
-s_size <- 1
 
-# probes
-col_mstate <- c(rgb(25.5, 153, 51, maxColorValue = 255), 
-                rgb(255, 127.5, 25.5, maxColorValue = 255), 
-                rgb(102, 165.75, 204, maxColorValue = 255) )
+### plot figure
 
-col_vigil <- brewer.pal(n = 9, name = "OrRd")
-
-sm <- prb_dat %>%
-  group_by(subj_id, m_state) %>%
-  summarise( zu.m = mean(IBzu_30), zu.s = sd(IBzu_30)/sqrt(length(IBzu_30)) ) %>%
-  ungroup()
-
-gm <- sm %>%
-  group_by(m_state) %>%
-  summarise( zu.gm = mean(zu.m), zu.gs = sd(zu.m)/sqrt(length(zu.m)) ) %>%
-  ungroup() 
-
-
-s1 <- ggplot(sm, aes(y=m_state, x=zu.m, group=subj_id) ) + 
-  geom_jitter(shape=21, size=p_size, stroke=s_size, height = .2, aes(fill=m_state, alpha = .2)) + 
-  geom_errorbarh(data=gm, aes( y=m_state, x=NULL, xmin = zu.gm-zu.gs*1.96, xmax = zu.gm + zu.gs*1.96, group=NULL, height=0), linewidth=1.2) +
-  geom_point(data=gm, shape=23, size=p_size+1, stroke=s_size+.5, aes(y = m_state, x = zu.gm, group = NULL, fill=m_state)) + 
-  scale_fill_manual( values = col_mstate ) +
-  scale_x_continuous(limits = c(-.96, .96), name="Mean IBI (z.u.)", expand = c(0.01,0.01) ) +
-  scale_y_discrete(name="Attentional state", limits=rev) +
-  annotate("segment", x = -.5, y = 1, xend = -.4, yend = 1) +
-  annotate("segment", x = -.5, y = 3, xend = -.4, yend = 3) +
-  annotate("segment", x = -.5, y = 3, xend = -.5, yend = 1) +
-  annotate("text", x = -.8, y = 2, label = "***", fontface = "bold", size = 6, vjust = .75, hjust = 0) +
-  annotate("segment", x = .7, y = 3, xend = .8, yend = 3) +
-  annotate("segment", x = .7, y = 2, xend = .8, yend = 2) +
-  annotate("segment", x = .8, y = 2, xend = .8, yend = 3) +
-  annotate("text", x = .85, y = 2.5, label = ".", fontface = "bold", size = 6, vjust = 0.1, hjust = 0) +
-  font_theme
-
-
-sm <- prb_dat %>%
-  mutate(vigil.r = as.ordered(abs(vigil-5))) %>%
-  group_by(subj_id, vigil.r) %>%
-  summarise( zu.m = mean(IBzu_30), zu.s = sd(IBzu_30)/sqrt(length(IBzu_30)) ) %>%
-  ungroup() %>%
-  filter(!is.na(vigil.r)) 
-
-gm <- sm %>%
-  group_by(vigil.r) %>%
-  summarise( zu.gm = mean(zu.m), zu.gs = sd(zu.m)/sqrt(length(zu.m)) ) %>%
-  ungroup() 
-
-s2 <- ggplot(sm, aes(y=vigil.r, x=zu.m, group=subj_id) ) + 
-  geom_jitter(shape=21, size=p_size, stroke=s_size, height = .2, aes(fill=vigil.r, alpha = .2)) + 
-  geom_errorbarh(data=gm, aes( y=vigil.r, x=NULL, xmin = zu.gm-zu.gs*1.96, xmax = zu.gm + zu.gs*1.96, group=NULL, height=0), linewidth=1.2) +
-  geom_point(data=gm, shape=23, size=p_size+1, stroke=s_size+.5, aes(y = vigil.r, x = zu.gm, group = NULL, fill=vigil.r)) + 
-  scale_fill_manual( values = col_vigil[4:7] ) +
-  scale_x_continuous(limits = c(-1.45, 1.45), name="Mean IBI (z.u.)", expand = c(0.01,0.01) ) +
-  scale_y_discrete(name="Vigilance level" ) +
-  annotate("text", x = -1.25, y = 4.1, label = "*", fontface = "bold", size = 6, vjust = .75, hjust = 0) +
-  font_theme + theme(axis.title.y = element_text(margin = unit(c(0, 4, 0, 0), "mm") ) )
+s <- summary(ibi.ms)
+df <- data.frame( dv = c( "MW", "MW", "MB", "MB" ), 
+                  iv = c( "m", "v", "m", "v" ), 
+                  grp = c ( "s", "s", "s", "s" ),
+                  est = c( s$p.coeff["IBzu_10"], s$p.coeff["ln_IBcv_10.s"], s$p.coeff["IBzu_10.1"], s$p.coeff["ln_IBcv_10.s.1"]), 
+                  se = c( s$se["IBzu_10"], s$se["ln_IBcv_10.s"], s$se["IBzu_10.1"], s$se["ln_IBcv_10.s.1"] ) )
+s <- summary(ibi.vo)
+df <- df %>%
+  add_row( dv = "vigil", iv = c("m", "v"), grp = c("s", "s"),
+           est = c( s$p.coeff["IBzu_30"], s$p.coeff["ln_IBcv_30.s"]), 
+           se = c( s$se["ln_IBcv_30.s"], s$se["ln_IBcv_30.s"] ) )
+s <- summary(ibi.pz)
+df <- df %>%
+  add_row( dv = "pupil", iv = c("m", "v"), grp = c("o", "o"),
+           est = c( s$p.coeff["IBzu_30"], s$p.coeff["ln_IBcv_30.s"]), 
+           se = c( s$se["ln_IBcv_30.s"], s$se["ln_IBcv_30.s"] ) )
+s <- summary(ibi.dp)
+df <- df %>%
+  add_row( dv = "dp", iv = c("m", "v"), grp = c("o", "o"),
+           est = c( s$p.coeff["IBzu_30"], s$p.coeff["ln_IBcv_30.s"]), 
+           se = c( s$se["ln_IBcv_30.s"], s$se["ln_IBcv_30.s"] ) )
+s <- summary(ibi.cn)
+df <- df %>%
+  add_row( dv = "cn", iv = c("m", "v"), grp = c("o", "o"),
+           est = c( s$p.coeff["IBzu_30"], s$p.coeff["ln_IBcv_30.s"]), 
+           se = c( s$se["ln_IBcv_30.s"], s$se["ln_IBcv_30.s"] ) )
+s <- summary(ibi.hr)
+df <- df %>%
+  add_row( dv = "hr", iv = c("m", "v"), grp = c("o", "o"),
+           est = c( s$p.coeff["IBzu_30"], s$p.coeff["ln_IBcv_30.s"]), 
+           se = c( s$se["ln_IBcv_30.s"], s$se["ln_IBcv_30.s"] ) )
+s <- summary(ibi.fa)
+df <- df %>%
+  add_row( dv = "far", iv = c("m", "v"), grp = c("o", "o"),
+           est = c( s$p.coeff["IBzu_30"], s$p.coeff["ln_IBcv_30.s"]), 
+           se = c( s$se["ln_IBcv_30.s"], s$se["ln_IBcv_30.s"] ) )
+s <- summary(ibi.rs)
+df <- df %>%
+  add_row( dv = "mRS", iv = c("m", "v"), grp = c("o", "o"),
+           est = c( s$p.coeff["IBzu_30"], s$p.coeff["ln_IBcv_30.s"]), 
+           se = c( s$se["ln_IBcv_30.s"], s$se["ln_IBcv_30.s"] ) )
+s <- summary(ibi.rv)
+df <- df %>%
+  add_row( dv = "RSv", iv = c("m", "v"), grp = c("o", "o"),
+           est = c( s$p.coeff["IBzu_30"], s$p.coeff["ln_IBcv_30.s"]), 
+           se = c( s$se["ln_IBcv_30.s"], s$se["ln_IBcv_30.s"] ) )
 
 
-# pupil
-sm <- filter(prb_pup, v30==T) %>% 
-  group_by(subj_id) %>%
-  summarise( pz.m = mean(muPup.z), pz.s = sd(muPup.z)/sqrt(length(muPup.z)),
-             cv.m = mean(ln_IBcv_30.s), cv.s = sd(ln_IBcv_30.s)/sqrt(length(ln_IBcv_30.s)),
-             zu.m = mean(IBzu_30), zu.s = sd(IBzu_30)/sqrt(length(IBzu_30)) ) %>%
-  ungroup()
-
-fs <- get_modelterm(ibi.pz, select = 1, n.grid = length(unique(prb_pup$probe_num)), as.data.frame = T)
-muSmoo <- colMeans(matrix(fs$fit, nrow = length(unique(prb_pup$subj_id)), ncol = length(unique(prb_pup$probe_num))), na.rm = T )
-
-em <- as.data.frame(ggemmeans(ibi.pz, "IBzu_30", condition = list(probe_num=which.min( abs(muSmoo) )) ) )
-
-p1 <- ggplot(sm, aes(y=pz.m, x=zu.m, group=subj_id) ) + 
-  geom_point(shape=21, size=p_size, stroke=s_size, fill="#8470FF", alpha=.7) + 
-  geom_ribbon(data = em, aes(y=predicted, x=x, ymin = conf.low, ymax = conf.high, 
-                             group=group), fill="#8470FF", alpha = .4) +
-  geom_line(data = em, aes(y=predicted, x=x, group=group), linewidth=1.2) +
-  scale_x_continuous(limits = c(-.39, .39), name="Mean IBI (z.u.)", expand = c(0,0) ) +
-  scale_y_continuous(limits = c(-.17, .17), name="Pupil size (z.u.)" ) +
-  annotate("text", x = -.335, y = .15, label = "*", fontface = "bold", size = 6, vjust = .75, hjust = 0) +
-  font_theme
+df$dv <- factor(df$dv, 
+                levels = c("RSv", "mRS", "far", "hr", "cn", "dp", "pupil", "vigil", "MB", "MW"), 
+                labels = c("RS variability", "Response speed", "False alarm rate", "Hit rate", "Bias (c)", "Sensitivity (d')", "Pupil size", "Vigilance", "Mind-blanking", "Mind-wandering") )
+df$iv <- factor(df$iv,
+                levels = c("m", "v"),
+                labels = c("IBI mean", "IBI variability") )
+df$grp <- factor(df$grp,
+                levels = c("s", "o") )
 
 
-em <- as.data.frame(ggemmeans(ibi.pz, "ln_IBcv_30.s", condition = list(probe_num=which.min( abs(muSmoo) )) ) )
+df_scales <- data.frame(
+  Panel = c("m", "v"),
+  xmin = c(-.9, -.7),
+  xmax = c(.9, .7)
+)
+df_scales <- split(df_scales, df_scales$Panel)
 
-p2 <- ggplot(sm, aes(y=pz.m, x=cv.m, group=subj_id) ) +  
-  geom_point(shape=21, size=p_size, stroke=s_size, fill="#8470FF", alpha=.7) + 
-  geom_ribbon(data = em, aes(y=predicted, x=x, ymin = conf.low, ymax = conf.high, 
-                             group=group), fill="#8470FF", alpha = .4) + 
-  geom_line(data = em, aes(y=predicted, x=x, group=group), linewidth=1.2) +
-  scale_x_continuous(limits = c(-1.75, 1.75), name="IBI coefficient of variation (z.u.)", expand = c(0,0) ) +
-  scale_y_continuous(limits = c(-.17, .17), name="Pupil size (z.u.)" ) +
-  annotate("text", x = -1.5, y = .15, label = "*", fontface = "bold", size = 6, vjust = .75, hjust = 0) +
-  font_theme 
-
-
-# SDT models
-sm <- prb_dat %>%
-  group_by(subj_id) %>%
-  summarise( dp.m = mean(dp), dp.s = sd(dp)/sqrt(length(dp)),
-             cn.m = mean(cn), cn.s = sd(cn)/sqrt(length(cn)),
-             hr.m = mean(HR_u), hr.s = sd(HR_u)/sqrt(length(HR_u)),
-             fa.m = mean(FAR_u), fa.s = sd(FAR_u)/sqrt(length(FAR_u)),
-             cv.m = mean(ln_IBcv_30.s), cv.s = sd(ln_IBcv_30.s)/sqrt(length(ln_IBcv_30.s)),
-             zu.m = mean(IBzu_30), zu.s = sd(IBzu_30)/sqrt(length(IBzu_30)) ) %>%
-  ungroup()
+scalesx <- lapply(df_scales, function(x) {
+  scale_x_continuous(limits = c(x$xmin, x$xmax), name = "" )
+})
 
 
-em <- as.data.frame(ggemmeans(ibi.dp, "IBzu_30"))
+levs <- levels(df$dv[df$grp=="s"])
+df_labs <- data.frame(
+  Panel = c(rep("m", length(levs)), rep("v", length(levs))),
+  nb = c( levs, rep("NULL", length(levs)) )
+)
+df_labs <- split(df_labs, df_labs$Panel)
 
-d1 <- ggplot(sm, aes(y=dp.m, x=zu.m, group=subj_id) ) + 
-  geom_point(shape=21, size=p_size, stroke=s_size, fill="#A5D6A7") + 
-  geom_ribbon(data = em, aes(y=predicted, x=x, ymin = conf.low, ymax=conf.high, 
-                             group=group), fill="#A5D6A7", alpha = .4) + 
-  geom_line(data = em, aes(y=predicted, x=x, group=group), linewidth=1.2) +
-  scale_x_continuous(limits = c(-.39, .39), name="Mean IBI (z.u.)", expand = c(0,0) ) +
-  scale_y_continuous(limits = c(1.4, 2.6), name="Sensitivity (z.u.)" ) +
-  annotate("text", x = -.335, y = 2.5, label = "*", fontface = "bold", size = 6, vjust = .75, hjust = 0) +
-  font_theme
+scalesy <- lapply(df_labs, function(x) {
+  scale_y_discrete(breaks = x$nb, name = "", labels = levs )
+})
 
-
-em <- as.data.frame(ggemmeans(ibi.dp, "ln_IBcv_30.s"))
-
-d2 <- ggplot(sm, aes(y=dp.m, x=cv.m, group=subj_id) ) + 
-  geom_point(shape=21, size=p_size, stroke=s_size, fill="#A5D6A7") + 
-  geom_ribbon(data = em, aes(y=predicted, x=x, ymin = conf.low, ymax=conf.high, 
-                             group=group), fill="#A5D6A7", alpha = .4) + 
-  geom_line(data = em, aes(y=predicted, x=x, group=group), linewidth=1.2) +
-  scale_x_continuous(limits = c(-1.75, 1.75), name="IBI coefficient of variation (z.u.)", expand = c(0,0) ) +
-  scale_y_continuous(limits = c(1.4, 2.6), name="Sensitivity (z.u.)" ) +
-  annotate("text", x = -1.5, y = 2.5, label = "*", fontface = "bold", size = 6, vjust = .75, hjust = 0) +
-  font_theme
-
-
-em <- as.data.frame(ggemmeans(ibi.hr, "IBzu_30"))
-
-h1 <- ggplot(sm, aes(y=hr.m, x=zu.m, group=subj_id) ) + 
-  geom_point(shape=21, size=p_size, stroke=s_size, fill="#A5D6A7") + 
-  geom_ribbon(data = em, aes(y=predicted, x=x, ymin = conf.low, ymax=conf.high, 
-                             group=group), fill="#A5D6A7", alpha = .4) + 
-  geom_line(data = em, aes(y=predicted, x=x, group=group), linewidth=1.2) +
-  scale_x_continuous(limits = c(-.39, .39), name="Mean IBI (z.u.)", expand = c(0,0) ) +
-  scale_y_continuous(limits = c(.89, 1), name="Hit rate", n.breaks = 2, expand = c(0,0) ) +
-  annotate("text", x = -.335, y = .987, label = "*", fontface = "bold", size = 6, vjust = .75, hjust = 0) +
-  font_theme
-
-
-em <- as.data.frame(ggemmeans(ibi.fa, "ln_IBcv_30.s"))
-
-f1 <- ggplot(sm, aes(y=fa.m, x=cv.m, group=subj_id) ) + 
-  geom_point(shape=21, size=p_size, stroke=s_size, fill="#A5D6A7") + 
-  geom_ribbon(data = em, aes(y=predicted, x=x, ymin = conf.low, ymax = conf.high, 
-                             group=group), fill="#A5D6A7", alpha = .4) + 
-  geom_line(data = em, aes(y=predicted, x=x, group=group), linewidth=1.2) +
-  scale_x_continuous(limits = c(-1.75, 1.75), name="IBI coefficient of variation (z.u.)", expand = c(0,0) ) +
-  scale_y_continuous(limits = c(.1, .7), name="False alarm rate" ) +
-  annotate("text", x = -1.5, y = .65, label = "***", fontface = "bold", size = 6, vjust = .75, hjust = 0) +
-  font_theme
-
-
-em <- as.data.frame(ggemmeans(ibi.cn, "ln_IBcv_30.s"))
-
-c1 <- ggplot(sm, aes(y=cn.m, x=cv.m, group=subj_id) ) + 
-  geom_point(shape=21, size=p_size, stroke=s_size, fill="#A5D6A7") + 
-  geom_ribbon(data = em, aes(y=predicted, x=x, ymin = conf.low, ymax = conf.high, 
-                             group=group), fill="#A5D6A7", alpha = .4) + 
-  geom_line(data = em, aes(y=predicted, x=x, group=group), linewidth=1.2) +
-  scale_x_continuous(limits = c(-1.75, 1.75), name="IBI coefficient of variation (z.u.)", expand = c(0,0) ) +
-  scale_y_continuous(limits = c(.4, 1), name="Bias (z.u.)" ) +
-  annotate("text", x = -1.5, y = .97, label = "**", fontface = "bold", size = 6, vjust = .75, hjust = 0) +
-  font_theme
-
-
-# reaction speed
-sm <- filter(prb_dat, vRS_30==T) %>%
-  group_by(subj_id) %>%
-  summarise( rs.m = mean(RSmu_30), rs.s = sd(RSmu_30)/sqrt(length(RSmu_30)),
-             cv.m = mean(ln_IBcv_30.s), cv.s = sd(ln_IBcv_30.s)/sqrt(length(ln_IBcv_30.s)),
-             zu.m = mean(IBzu_30), zu.s = sd(IBzu_30)/sqrt(length(IBzu_30)) ) %>%
-  ungroup()
-
-
-fs <- get_modelterm(ibi.rs, select = 1, n.grid = length(unique(prb_dat$probe_num)), as.data.frame = T)
-muSmoo <- colMeans(matrix(fs$fit, nrow = length(unique(prb_dat$subj_id)), ncol = length(unique(prb_dat$probe_num))), na.rm = T )
-
-em <- as.data.frame(ggemmeans(ibi.rs, "ln_IBcv_30.s", condition = list(probe_num=which.min(abs(muSmoo)) )) )
-
-r1 <- ggplot(sm, aes(y=rs.m, x=cv.m, group=subj_id) ) + 
-  geom_point(shape=21, size=p_size, stroke=s_size, fill="#A5D6A7") + 
-  geom_ribbon(data = em, aes(y=predicted, x=x, ymin = conf.low, ymax = conf.high, 
-                             group=group), fill="#A5D6A7", alpha = .4) + 
-  geom_line(data = em, aes(y=predicted, x=x, group=group), linewidth=1.2) +
-  scale_x_continuous(limits = c(-1.75, 1.75), name="IBI coefficient of variation (z.u.)", expand = c(0,0) ) +
-  scale_y_continuous(limits = c(1.55, 2.45), name=expression(bold( paste("Speed ", (s^{-1}) ) )), breaks = c(1.6, 2, 2.4) ) +
-  annotate("text", x = -1.5, y = 2.4, label = "***", fontface = "bold", size = 6, vjust = .75, hjust = 0) +
+subj <- ggplot(filter(df, grp=="s"), aes(y = dv, x = est, xmin = est-(1.96*se), xmax = est+(1.96*se), col = dv ) ) +
+  geom_vline(xintercept = 0, linetype = "dashed", alpha = .5) + 
+  geom_point(size = 2) + geom_errorbarh(height=0) + 
+  scale_color_manual(values = c("Mind-wandering" = "#ff801a", "Mind-blanking" = "#7aa6cc", "Vigilance" = "#d11141")) +
+  facet_wrap(.~iv, scales = "free") +
+  ggh4x::facetted_pos_scales(x = scalesx, y = scalesy) +
   font_theme
 
 
 
-# arrange in grid for figure 2
-plot_grid(NULL,NULL, NULL,
-          s1, NULL, s2,
-          NULL, NULL, NULL,
-          p1, NULL, p2, 
-          NULL, NULL, NULL,
-          d1, NULL, d2, 
-          h1, NULL, f1,
-          c1, NULL, r1,
-          labels = c("", "", "", "A", "", "", "B", "", "", "", "", "", "C"), vjust = .7,
-          rel_heights = c(.03, 1, .01, 1, .1, 1, 1, 1), align = "v", axis = "lr",
-          rel_widths = c(1, .1, 1),
-          nrow = 8)
+df_scales <- data.frame(
+  Panel = c("m", "v"),
+  xmin = c(-.27, -.27),
+  xmax = c(.27, .27)
+)
+df_scales <- split(df_scales, df_scales$Panel)
 
-ggsave( filename = 'figure2.png', path = 'plots', height = 25, width = 14, units = "cm", dpi=600)
+scalesx <- lapply(df_scales, function(x) {
+  scale_x_continuous(limits = c(x$xmin, x$xmax), name = expression(paste(beta, " coefficient")) )
+})
+
+levs <- levels(df$dv[df$grp=="o"])
+df_labs <- data.frame(
+  Panel = c(rep("m", length(levs)), rep("v", length(levs))),
+  nb = c( levs, rep("NULL", length(levs)) )
+)
+df_labs <- split(df_labs, df_labs$Panel)
+
+scalesy <- lapply(df_labs, function(x) {
+  scale_y_discrete(breaks = x$nb, name = "", labels = levs )
+})
+
+obj <- ggplot(filter(df, grp=="o"), aes(y = dv, x = est, xmin = est-(1.96*se), xmax = est+(1.96*se), col = dv ) ) +
+  geom_vline(xintercept = 0, linetype = "dashed", alpha = .5) + 
+  geom_point(size = 2) + geom_errorbarh(height=0) + 
+  scale_color_manual(values = c("Pupil size" = "#8470FF", "Sensitivity (d')" = "#A5D6A7", "Bias (c)" = "#A5D6A7", 
+                                "Hit rate" = "#A5D6A7", "False alarm rate" = "#A5D6A7", "Response speed" = "#ffc425", "RS variability" = "#ffc425")) +
+  facet_wrap(.~iv, scales = "free") +
+  ggh4x::facetted_pos_scales(x = scalesx, y = scalesy) +
+  font_theme + theme(strip.text.x = element_blank())
+  
+
+
+cowplot::plot_grid(NULL,
+                   subj, 
+                   obj,
+                   labels = c("", "A", "B"), vjust = .7,
+                   rel_heights = c(.01, .5, .7), align = "v", axis = "lr",
+                   nrow = 3)
+
+ggsave('figure2_betas.png', height = 12, width = 14, units = "cm", dpi=600, path = 'plots')
+
+
+
+
 
 
