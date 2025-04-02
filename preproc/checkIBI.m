@@ -1,4 +1,4 @@
-function checkRRI(EEG, mkr, unit)
+function checkIBI(EEG, mkr, unit)
 % EEG = EEGlab structure
 % mkr = char vector specifying EEG event marker code indicating R-peak event
 % unit = optional input for histrograms: z = z-scored intervals; ms = millisecond intervals
@@ -9,7 +9,7 @@ end
 
 % open figure
 figure('units','normalized','outerposition',[0.2 0.2 .7 .5])
-sgtitle([EEG.filename(1:end-4), ': Summary of R-R intervals' ], 'FontSize', 22)
+sgtitle([EEG.filename(1:6), ': Summary of R-R intervals' ], 'FontSize', 22)
 
 % estimate successive interbeat (R-R) intervals (seconds)
 rpk_latencies = [EEG.event(strcmp({EEG.event.type}, mkr)).latency]/EEG.srate;

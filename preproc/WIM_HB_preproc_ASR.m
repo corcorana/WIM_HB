@@ -1,81 +1,98 @@
 %%
-clear all
-close all
+clear
+close
 
 %% paths
 run(['..' filesep 'localdef_WIM_HB'])
 addpath(genpath(path_eeglab))
 
-proc_asr = fullfile(eeg_preproc, 'asr');
+proc_asr = fullfile(wim_preproc, 'asr');
 if ~exist(proc_asr, 'dir')
     mkdir(proc_asr)
+end
+proc_ecg = fullfile(wim_preproc, 'ecg');
+if ~exist(proc_ecg, 'dir')
+    mkdir(proc_ecg)
 end
 
 %% batch process
 
-subjs = dlmread(['..' filesep 'subjs.txt']);
+subjs = dir(fullfile(wim_preproc, 'cln', 'MWI*.set'));
 
-bad_chans = cell(length(subjs), 1);
+fname = sprintf('WIM_HB_ASR_badChans_%s.csv', datestr(now, 'yyyy-mm-dd'));
+fid = fopen( fname, 'w' );
+fprintf( fid, '%s, %s\n', 'subID', 'rejChans');
+fclose( fid );
+rej_chans = cell(length(subjs),1);
+
 for ix = 1:length(subjs)
-    snum = subjs(ix);
-    sname = ['MWI' num2str(snum)];
+    
+    sname = subjs(ix).name(1:6);
     fprintf(['Loading ' sname '...\n'])
 
     % load cleanlined EEG
-    EEG = pop_loadset( 'filename', [sname, '_cln.set'], 'filepath', fullfile(eeg_preproc, 'cln'));
+    EEG = pop_loadset( 'filename', subjs(ix).name, 'filepath', fullfile(wim_preproc, 'cln'));
 
-    % exclude non-trial data (between blocks & within probes)
-    bsta = find(ismember({EEG.event.type}, 'B  1'));
-    bsta = bsta(2:end);
-    bend = find(ismember({EEG.event.type}, 'K  1'));
-    bend = bend(1:end-1);
-    for bx = length(bend):-1:1
-        if (EEG.event(bsta(bx)).latency) - (EEG.event(bend(bx)).latency+EEG.srate*2) > EEG.srate
-            EEG = pop_select( EEG, 'nopoint', [EEG.event(bend(bx)).latency+EEG.srate*2, EEG.event(bsta(bx)).latency-1] );
+    % low-pass filter
+    EEG = pop_eegfiltnew(EEG, [], 40);
+
+    % exclude non-trial data between blocks
+    if EEG.subj_info.subID(1) == '0'        % PBI data
+        f = find(strcmp({EEG.event.type}, 'S  2'));
+        bsta = f(1);
+        EEG = pop_select( EEG, 'nopoint', [EEG.event(1).latency, EEG.event(f(1)).latency] );
+        f = find(strcmp({EEG.event.type}, 'S 22'));
+        bend = f(f>bsta);
+        for bx = length(bend):-1:1
+            try
+                EEG = pop_select( EEG, 'nopoint', [EEG.event(bend(bx)).latency+EEG.srate*4, EEG.event(bend(bx)+1).latency] );
+            catch
+                EEG = pop_select( EEG, 'nopoint', [EEG.event(bend(bx)).latency+EEG.srate*4, size(EEG.data, 2)] );
+            end
+        end
+    elseif EEG.subj_info.subID(1) == '3'    % MBI data
+        bsta = find(ismember({EEG.event.type}, 'B  1'));
+        bsta = bsta(2:end);
+        bend = find(ismember({EEG.event.type}, 'K  1'));
+        bend = bend(1:end-1);
+        for bx = length(bend):-1:1
+            if (EEG.event(bsta(bx)).latency) - (EEG.event(bend(bx)).latency+EEG.srate*2) > EEG.srate
+                EEG = pop_select( EEG, 'nopoint', [EEG.event(bend(bx)).latency+EEG.srate*2, EEG.event(bsta(bx)).latency-1] );
+            end
         end
     end
-    psta = find(contains({EEG.event.type}, 'P  '));
-    pend = find(matches({EEG.event.type}, 'C  1'));
-    for px = length(psta):-1:1
-    	EEG = pop_select( EEG, 'nopoint',[EEG.event(psta(px)).latency+EEG.srate*2, EEG.event(pend(px)).latency-1] );
+
+    if strcmp(sname, 'MWI323')
+        EEG = pop_select( EEG, 'nopoint', [1041000, 1148500] ); % ? experiment paused due to technical failure
     end
 
+    % set ECG aside (ASR still identifies as bad channel when told to ignore)
+    ECG = pop_select( EEG, 'channel',{'ECG'}); 
+    ECG = pop_saveset( ECG, 'filename', [sname, '_ecg.set'], 'filepath', proc_ecg);
+    EEG = pop_select( EEG, 'nochannel',{'ECG'});     
 
-    % separate for ASR
-    ECG = pop_select( EEG, 'channel', {'ECG'});
-    ECG.chanlocs.type = 'ECG';
-    ECG.chanlocs.urchan = [];
-    ECG.chanlocs.ref = [];
-    EEG = pop_select( EEG, 'nochannel', {'ECG'});
-
-    
-    % compute average ref & add AFz back into array
-    EEG = pop_reref( EEG, [], 'refloc', struct('labels', {'AFz'},'type',{'EEG'},...
-       'theta',{0},'radius',{0.37994},'X',{79.0255},'Y',{0},'Z',{31.3044},...
-       'sph_theta',{0},'sph_phi',{21.61},'sph_radius',{85},'urchan',{EEG.nbchan+1},'ref',{''},'datachan',{0}));
-    
-    % reref to TP9/10
-    EEG = pop_reref( EEG, [find(strcmp({EEG.chanlocs.labels}, 'TP9')),...
-        find(strcmp({EEG.chanlocs.labels}, 'TP10'))] );
-    
     % ASR to reject bad EEG channels & repair bursts
     ASR = pop_clean_rawdata(EEG, 'FlatlineCriterion',5, 'ChannelCriterion',0.8,...
         'LineNoiseCriterion','off', 'Highpass','off', 'BurstCriterion', 20,...
-        'WindowCriterion','off', 'BurstRejection','off', 'Distance','Euclidian');
+        'WindowCriterion','off', 'BurstRejection','off', 'Distance','Euclidian' );
     
     % drop bad channels from EEG
-   	bad_chans{ix,1} = setdiff({EEG.chanlocs.labels}, {ASR.chanlocs.labels});
+   	rej_chans{ix} = setdiff({EEG.chanlocs.labels}, {ASR.chanlocs.labels});
+    if numel(	rej_chans{ix} ) > 6
+        warning('... >6 bad channels detected... please review dataset')
+        continue
+    end
     ASR.urchanlocs = EEG.chanlocs;
 
-    % reunite EEG/ECG for QRS extraction and artifact rejection
-    ASR.nbchan = ASR.nbchan+1;
-    ASR.data = [ASR.data; ECG.data];
-    ASR.chanlocs = [ASR.chanlocs, ECG.chanlocs];
-
-    % save combined EEG/ECG dataset
+    % save corrected data
     ASR = pop_saveset( ASR, 'filename', [sname, '_asr.set'], 'filepath', proc_asr);
-    save('WIM-HB_ASR_bad_chans.mat', 'bad_chans')
+
+    % record number of channels rejected per subject
+    fid = fopen( fname, 'a' );
+    fprintf( fid, '%s, %d\n', sname, numel(rej_chans{ix}) );
+    fclose( fid );
+
 end
 
-% save summary of bad_chans
-dlmwrite('WIM-HB_ASR_bad_chans.txt', [subjs, cellfun('length', bad_chans)] )
+% save bad channel info
+save(sprintf('WIM_HB_ASR_badChans_%s.mat', datestr(now, 'yyyy-mm-dd')), 'rej_chans')

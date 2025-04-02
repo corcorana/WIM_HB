@@ -1,12 +1,12 @@
 %%
-clear all
-close all
+clear
+close
 
 %% paths
 run(['..' filesep 'localdef_WIM_HB'])
 addpath(genpath(path_eeglab))
 
-proc_cln = fullfile(eeg_preproc, 'cln');
+proc_cln = fullfile(wim_preproc, 'cln');
 if ~exist(proc_cln, 'dir')
     mkdir(proc_cln)
 end
@@ -16,21 +16,18 @@ end
 prep = 1;                  % 1 = PREP pipeline version of CleanLine; else use CleanLine plugin
 frex = [50, 100];          % frequencies to clean
 
-subjs = dlmread(['..' filesep 'subjs.txt']);
+subjs = dir(fullfile(wim_preproc, 'min', 'MWI*.set'));
 
 for ix = 1:length(subjs)
-    snum = subjs(ix);
-    sname = ['MWI' num2str(snum)];
+
+    sname = subjs(ix).name(1:6);
     fprintf(['Loading ' sname '...\n'])
 
     % load minimally preprocessed EEG
-    EEG = pop_loadset( 'filename', [sname, '_min.set'], 'filepath', fullfile(eeg_preproc, 'min'));
+    EEG = pop_loadset( 'filename', subjs(ix).name, 'filepath', fullfile(wim_preproc, 'min'));
 
     % high-pass filter
-    EEG = pop_eegfiltnew(EEG, 1.0, []);
-    
-    % downsample 
-    EEG = pop_resample(EEG, 250);
+    EEG = pop_eegfiltnew(EEG, .5, []);
     
     % cleanline
     if prep == 1    % run cleanLineNoise
