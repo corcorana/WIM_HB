@@ -4,6 +4,9 @@ library(mgcViz)
 library(itsadug)
 library(emmeans)
 library(ggeffects)
+library(ggh4x)
+library(cowplot)
+
 
 # global settings
 options(contrasts = c("contr.treatment", "contr.poly"))
@@ -18,308 +21,247 @@ font_theme <- theme(
   axis.text.y = element_text(size = fsize),
   strip.text.x = element_text(size = fsize+2, face="bold"),
   strip.text.y = element_text(size = fsize+2, face="bold"),
-  legend.position = "none",  
   panel.border = element_rect(fill=NA),
-  panel.background = element_rect(fill = "transparent",colour = NA),
-  plot.background = element_rect(fill = "transparent",colour = NA)
+  panel.background = element_rect(fill = "transparent", colour = NA),
+  plot.background = element_rect(fill = "transparent", colour = NA),
+  legend.background = element_rect(fill = "transparent")
 )
 
 
-# import trial data
-dat_trl <- read.csv( "WIM_HB_trl_data.txt" )
 
-# replace NaN with NA
-dat_trl[dat_trl=="NaN"] <- NA
-
-
-# recode variables
-dat_trl <- dat_trl %>% 
-  mutate(subj_id = as.factor(subj_id),
+# import & recode variables
+dat <- read.csv("WIM_HB_IBI_pup_behav.csv") %>% 
+  mutate(HR = (H+.5)/(H+M+1), # go trials
+         FAR = (FA+.5)/(FA+CR+1), # nogo trials
+         Dp = qnorm(HR) - qnorm(FAR), 
+         Cn = rowMeans(cbind(qnorm(HR), qnorm(FAR))),
+         site = as.factor(ifelse(subj_id<100, "PBI", "MBI")),
+         subj_id = as.factor(subj_id),
+         gender = as.factor(gender),
          stim_type = factor(stim_type, levels = c("D", "F"), labels = c("Digit", "Face")),
-         trial_type = factor(trial_type, levels = c("G", "N"), labels = c("Go", "NoGo")),
+         prPup = ifelse(is.nan(prPup), 0, prPup),
          m_state = factor(ifelse(state>3, 3, state), levels = c("1", "2", "3"), labels = c("ON", "MW", "MB")),
          mstat = ifelse(state>3, 2, state-1),
-         pOn = c(0, diff(dat_trl$probe_num) ),
-         lagRespType = c(NA, resp_type[1:nrow(.)-1]), 
-         lagRespType = ifelse(pOn==T, NA, lagRespType),
-         pOff = c(diff(dat_trl$probe_num), 0 ),
-         leadRespType = c(resp_type[2:nrow(.)], NA),
-         leadRespType = ifelse(pOff==T, NA, leadRespType),
-         resp_type = ifelse(resp_type=='C' & lagRespType=='M' & leadRespType=="M", NA, resp_type), 
-         resp_type = factor(resp_type, levels = c("H", "M", "F", "C"), labels = c("Hit", "Miss", "FalseAlarm", "CorrectReject"))
-  )
-
-
-# import interpolated IBI and RS data
-dat_int <- read.csv( "WIM_HB_IBI_RT_interp.txt" ) %>%
-  mutate(subj_id = as.factor(subj_id),
-         ln_IBcv_30.s = ( log(IBcv_30)-mean(log(IBcv_30)) ) / sd(log(IBcv_30)),
-         ln_RScv_30.s = ( log(RScv_30)-mean(log(RScv_30)) ) / sd(log(RScv_30)),
-         ln_IBcv_10.s = ( log(IBcv_10)-mean(log(IBcv_10)) ) / sd(log(IBcv_10)),
-         ln_RScv_10.s = ( log(RScv_10)-mean(log(RScv_10)) ) / sd(log(RScv_10))
-  )
-
-# replace NaN with NA
-dat_int[dat_int=="NaN"] <- NA
-
-# exclude RS estimates derived from insufficient number of trials
-dat_int <- filter(dat_trl, time_to_probe > -30) %>%
-  group_by(subj_id, probe_num) %>%
-  summarise( nRS_30 = sum(!is.na(rspeed)) ) %>%
-  ungroup() %>%
-  mutate(vRS_30 = nRS_30 >= 15) %>%
-  left_join(dat_int, by = c("subj_id", "probe_num") )
-
-dat_int <- filter(dat_trl, time_to_probe > -10) %>%
-  group_by(subj_id, probe_num) %>%
-  summarise( nRS_10 = sum(!is.na(rspeed)) ) %>%
-  ungroup() %>%
-  mutate(vRS_10 = nRS_10 >= 5) %>%
-  left_join(dat_int, by = c("subj_id", "probe_num") )
-
-
-# combine probe-locked trial and ibi data
-epoch <- c(-30, 0)
-
-prb_dat <- dat_trl %>%
-  filter(time_to_probe > epoch[1] & time_to_probe < epoch[2]) %>%
-  group_by(subj_id, block_num, probe_num, stim_type, m_state, mstat, vigil) %>%
-  summarise(H = sum(resp_type == "Hit", .5, na.rm = T), 
-            M = sum(resp_type == "Miss", .5, na.rm = T),
-            FA = sum(resp_type == "FalseAlarm", .5, na.rm = T),
-            CR = sum(resp_type == "CorrectReject", .5, na.rm = T),
-            HR = H/(H+M),
-            FAR = FA/(FA+CR)
-  ) %>%
-  ungroup() %>%
-  mutate(dp = qnorm(HR) - qnorm(FAR), cn = rowMeans(cbind(qnorm(HR), qnorm(FAR))), 
-         vigil.o = as.ordered(vigil), vigil.s = scale(vigil)
-  ) %>%
-  left_join(dat_int, by = c("subj_id", "probe_num") )
-
-# unadjusted H / FA rates 
-prb_dat <- dat_trl %>%
-  filter(time_to_probe > epoch[1] & time_to_probe < epoch[2]) %>%
-  group_by(subj_id, probe_num) %>%
-  summarise(H_u = sum(resp_type == "Hit", na.rm = T), 
-            M_u = sum(resp_type == "Miss", na.rm = T),
-            FA_u = sum(resp_type == "FalseAlarm", na.rm = T),
-            CR_u = sum(resp_type == "CorrectReject", na.rm = T),
-            HR_u = H_u/(H_u+M_u),
-            FAR_u = FA_u/(FA_u+CR_u)
-  ) %>%
-  ungroup() %>%
-  mutate(HR_u = ifelse(HR_u == 0, .001, if_else(HR_u == 1, .999, HR_u ) ),
-         FAR_u = ifelse(FAR_u == 0, .001, if_else(FAR_u == 1, .999, FAR_u ) )
-  ) %>%
-  left_join(prb_dat, by = c("subj_id", "probe_num") )
-
-# calculate SDT for short epoch 
-epoch <- c(-10, 0)
-
-prb_dat <- dat_trl %>%
-  filter(time_to_probe > epoch[1] & time_to_probe < epoch[2]) %>%
-  group_by(subj_id, probe_num) %>%
-  summarise(H_10 = sum(resp_type == "Hit", .5, na.rm = T), 
-            M_10 = sum(resp_type == "Miss", .5, na.rm = T),
-            FA_10 = sum(resp_type == "FalseAlarm", .5, na.rm = T),
-            CR_10 = sum(resp_type == "CorrectReject", .5, na.rm = T),
-            HR_10 = H_10/(H_10+M_10),
-            FAR_10 = FA_10/(FA_10+CR_10)
-  ) %>%
-  ungroup() %>%
-  mutate(dp_10 = qnorm(HR_10) - qnorm(FAR_10), cn_10 = rowMeans(cbind(qnorm(HR_10), qnorm(FAR_10)))
-  ) %>%
-  left_join(prb_dat, by = c("subj_id", "probe_num") )
-
-
-
-## pupil data (calculated per trial ~30 prior probe)
-dat_pup <- read.csv( "WIM_HB_SW_Pup.txt" )
-
-# replace NaN with NA
-dat_pup[dat_pup=="NaN"] <- NA
-
-# exclude lost signal
-dat_pup$Pup[dat_pup$Pup<5] <- NA
-
-# factorise subject ID
-dat_pup$subj_id <- as.factor(dat_pup$SubID)
-
-# summary stats for scaling on subject level
-sumStats <- filter(dat_pup, DistProbe > -30) %>% 
+         vigil = abs(vigil-5), # reverse score so V4 = Extremely Alert
+         vigil.s = scale(vigil),
+         ln_cvIBI.s = ( log(cvIBI)-mean(log(cvIBI)) ) / sd(log(cvIBI))
+         ) %>%
   group_by(subj_id) %>%
-  summarise(muPup = mean(Pup, na.rm=T), sdPup = sd(Pup, na.rm=T)) %>%
-  ungroup()
+  mutate(totMS = sum(!is.na(m_state))
+         ) %>%
+  ungroup
 
-dat_pup <- left_join(dat_pup, sumStats, "subj_id") %>%
-  mutate(Pup.z = (Pup-muPup)/sdPup
-  )
+# replace NaN with NA
+dat[dat=="NaN"] <- NA
 
-# exclude extreme data and flag epochs missing data from > numNA trials
-dat_pup$Pup.z[abs(dat_pup$Pup.z)>4]<-NA
 
-prb_pup <- filter(dat_pup, DistProbe > -30) %>%
-  group_by(subj_id, ProbeN) %>%
-  summarise(probe_num = mean(ProbeN), nEst = sum(!is.na(Pup.z)), muPup = mean(Pup, na.rm=T), muPup.z = mean(Pup.z, na.rm=T) ) %>%
+# drop subjects who lack mstate variance
+cntMS <- dat %>%
+  group_by(subj_id, m_state, totMS, .drop = FALSE) %>%
+  summarise( nMS = n() ) %>%
   ungroup() %>%
-  mutate(v30 = nEst>=15) %>%
-  left_join(prb_dat, by = c("subj_id", "probe_num") )
+  filter(!is.na(m_state))
 
-prb_pup <- filter(dat_pup, DistProbe > -10) %>%
-  group_by(subj_id, ProbeN) %>%
-  summarise(nEst10 = sum(!is.na(Pup.z)), muPup10.z = mean(Pup.z, na.rm=T) ) %>%
-  ungroup() %>%
-  mutate(v10 = nEst10>=5) %>%
-  left_join(prb_pup, by = c("subj_id", "ProbeN") )
+excl <- cntMS$subj_id[which(cntMS$nMS==cntMS$totMS)] 
+msdat <- dat[!dat$subj_id %in% excl, ]
+
+cntMS$totMS[is.na(cntMS$totMS)] <- 60
 
 
-# descriptives
-cntMS <- prb_dat %>% 
-  group_by(subj_id, m_state, .drop = FALSE) %>%
-  summarise( n = n() ) %>%
-  ungroup()
+# thresholds for epoch-level data
+rThresh <- 5 # min number of responses
+pThresh <- .5 # min proportion of pupil data
+
+
+# m_state onto time / vigil / pupil
+tot.ms.m <- gam(list(mstat 
+                     ~ stim_type + scale(probe_num) + s(subj_id, bs="re"),
+                     ~ stim_type + scale(probe_num) + s(subj_id, bs="re")
+                     ),
+                family = multinom(K=2), method = "REML", data = filter(msdat, site=="MBI") )
+
+tot.ms.p <- gam(list(mstat 
+                     ~ stim_type + scale(probe_num) + s(subj_id, bs="re"),
+                     ~ stim_type + scale(probe_num) + s(subj_id, bs="re")
+                     ),
+                family = multinom(K=2), method = "REML", data = filter(msdat, site=="PBI") )
+
+
+vig.ms.m <- gam(list(mstat 
+                     ~ stim_type + vigil.s + s(subj_id, probe_num, bs="fs", m=1),
+                     ~ stim_type + vigil.s + s(subj_id, probe_num, bs="fs", m=1)
+                     ),
+                family = multinom(K=2), method = "REML", data = filter(msdat, site=="MBI") )
+
+vig.ms.p <- gam(list(mstat 
+                     ~ stim_type + vigil.s + s(subj_id, probe_num, bs="fs", m=1),
+                     ~ stim_type + vigil.s + s(subj_id, probe_num, bs="fs", m=1)
+                     ),
+                family = multinom(K=2), method = "REML", data = filter(msdat, site=="PBI") )
+
+
+pup.ms.m <- gam(list(mstat 
+                     ~ stim_type + zuPup + s(subj_id, probe_num, bs="fs", m=1),
+                     ~ stim_type + zuPup + s(subj_id, probe_num, bs="fs", m=1)
+                     ),
+                family = multinom(K=2), method = "REML", data = filter(msdat, prPup >= pThresh & site=="MBI") )
+
+pup.ms.p <- gam(list(mstat 
+                     ~ stim_type + zuPup + s(subj_id, probe_num, bs="fs", m=1),
+                     ~ stim_type + zuPup + s(subj_id, probe_num, bs="fs", m=1)
+                     ),
+                family = multinom(K=2), method = "REML", data = filter(msdat, prPup >= pThresh & site=="PBI") )
 
 
 # behav onto m_state
-ms.dp <- gam(dp_10 ~ stim_type + m_state + s(subj_id, probe_num, bs="fs", m=1),
-             family = gaussian(), method = "REML", data = filter(prb_dat, subj_id!="314") )
+ms.dp.m <- gam(Dp ~ stim_type + m_state + s(subj_id, probe_num, bs="fs", m=1),
+               family = gaussian(), method = "REML", data = filter(msdat, site=="MBI") )
 
-ms.cn <- gam(cn_10 ~ stim_type + m_state + s(subj_id, probe_num, bs="fs", m=1),
-             family = gaussian(), method = "REML", data = filter(prb_dat, subj_id!="314") )
+ms.cn.m <- gam(Cn ~ stim_type + m_state + s(subj_id, probe_num, bs="fs", m=1),
+               family = gaussian(), method = "REML", data = filter(msdat, site=="MBI") )
 
-ms.rs <- gam(RSmu_10 ~ stim_type + m_state + s(subj_id, probe_num, bs="fs", m=1),
-             family = gaussian(), method = "REML", data = filter(prb_dat, subj_id!="314" & vRS_10==T) )
+ms.rs.m <- gam(muRS ~ stim_type + m_state + s(subj_id, probe_num, bs="fs", m=1),
+               family = gaussian(), method = "REML", data = filter(msdat, site=="MBI" & nRS >= rThresh) )
 
-ms.rv <- gam(RScv_10 ~ stim_type + m_state + s(subj_id, probe_num, bs="fs", m=1),
-             family = Gamma(), method = "REML", data = filter(prb_dat, subj_id!="314" & vRS_10==T) )
-
-
-# m_state onto time / vigil
-tot.ms <- gam(list(mstat 
-                   ~ stim_type + scale(probe_num) + s(subj_id, bs="re"),
-                   ~ stim_type + scale(probe_num) + s(subj_id, bs="re")
-                   ),
-              family = multinom(K=2), method = "REML", data = filter(prb_dat, subj_id!="314") )
+ms.rv.m <- gam(cvRS ~ stim_type + m_state + s(subj_id, probe_num, bs="fs", m=1),
+               family = tw(), method = "REML", data = filter(msdat, site=="MBI" & nRS >= rThresh) )
 
 
-vig.ms <- gam(list(mstat 
-                    ~ stim_type + vigil.s + s(subj_id, probe_num, bs="fs", m=1),
-                    ~ stim_type + vigil.s + s(subj_id, probe_num, bs="fs", m=1)
-                    ),
-               family = multinom(K=2), method = "REML", data = filter(prb_dat, subj_id!="314") )
+ms.dp.p <- gam(Dp ~ stim_type + m_state + s(subj_id, probe_num, bs="fs", m=1),
+             family = gaussian(), method = "REML", data = filter(msdat, site=="PBI") )
+
+ms.cn.p <- gam(Cn ~ stim_type + m_state + s(subj_id, probe_num, bs="fs", m=1),
+             family = gaussian(), method = "REML", data = filter(msdat, site=="PBI") )
+
+ms.rs.p <- gam(muRS ~ stim_type + m_state + s(subj_id, probe_num, bs="fs", m=1),
+             family = gaussian(), method = "REML", data = filter(msdat, site=="PBI" & nRS >= rThresh) )
+
+ms.rv.p <- gam(cvRS ~ stim_type + m_state + s(subj_id, probe_num, bs="fs", m=1),
+             family = tw(), method = "REML", data = filter(msdat, site=="PBI" & nRS >= rThresh) )
 
 
-pup.ms <- gam(list(mstat 
-                   ~ stim_type + muPup10.z + s(subj_id, probe_num, bs="fs", m=1),
-                   ~ stim_type + muPup10.z + s(subj_id, probe_num, bs="fs", m=1)
-                   ),
-              family = multinom(K=2), method = "REML", data = filter(prb_pup, subj_id!="314" & v10==T) )
+# summary stats
+msdat %>% 
+  group_by( site, m_state ) %>%
+  summarise( dp = mean(Dp), dps = sd(Dp),
+             cn = mean(Cn), cns = sd(Cn),
+             )
+
+filter(msdat, nRS >= rThresh) %>% 
+  group_by( site, m_state ) %>%
+  summarise( rsm = mean(muRS), rss = sd(muRS),
+             cvm = mean(cvRS), cvs = sd(cvRS),
+  )
 
 
+# ms onto IBI
 ibi.ms <- gam(list(mstat 
-                   ~ stim_type + ln_IBcv_10.s + IBzu_10 + s(subj_id, probe_num, bs="fs", m=1),
-                   ~ stim_type + ln_IBcv_10.s + IBzu_10 + s(subj_id, probe_num, bs="fs", m=1)
+                   ~ site + stim_type + ln_cvIBI.s + zuIBI + s(subj_id, probe_num, bs="fs", m=1),
+                   ~ site + stim_type + ln_cvIBI.s + zuIBI + s(subj_id, probe_num, bs="fs", m=1)
                    ),
-              family = multinom(K=2), method = "REML", data = filter(prb_dat, subj_id!="314") )
+              family = multinom(K=2), method = "REML", data = msdat )
 
 
 # vigil onto IBI
-ibi.vo <- gam(vigil ~ stim_type + ln_IBcv_30.s + IBzu_30 + s(subj_id, probe_num, bs="fs", m=1),
-              family = ocat(R=4), method = "REML", data = prb_dat )
+ibi.vo <- gam(vigil ~ site + stim_type + ln_cvIBI.s + zuIBI + s(subj_id, probe_num, bs="fs", m=1),
+              family = ocat(R=4), method = "REML", data = dat )
 
 
 # pupil onto IBI
-ibi.pz <- gam(muPup.z ~ stim_type + ln_IBcv_30.s + IBzu_30 + s(subj_id, probe_num, bs="fs", m=1),
-              family = gaussian(), method = "REML", data = filter(prb_pup, v30==T) )
+ibi.pz <- gam(zuPup ~ site + stim_type + ln_cvIBI.s + zuIBI + s(subj_id, probe_num, bs="fs", m=1),
+              family = gaussian(), method = "REML", data = filter(dat, prPup >= pThresh) )
 
 
 # behav onto IBI
-ibi.dp <- gam(dp ~ stim_type + ln_IBcv_30.s + IBzu_30 + s(subj_id, probe_num, bs="fs", m=1),
-              family = gaussian(), method = "REML", data = prb_dat )
+ibi.dp <- gam(Dp ~ site + stim_type + ln_cvIBI.s + zuIBI + s(subj_id, probe_num, bs="fs", m=1),
+              family = gaussian(), method = "REML", data = dat )
 
-ibi.cn <- gam(cn ~ stim_type + ln_IBcv_30.s + IBzu_30 + s(subj_id, probe_num, bs="fs", m=1),
-              family = gaussian(), method = "REML", data = prb_dat )
+ibi.cn <- gam(Cn ~ site + stim_type + ln_cvIBI.s + zuIBI + s(subj_id, probe_num, bs="fs", m=1),
+              family = gaussian(), method = "REML", data = dat )
 
-ibi.hr <- gam(HR_u ~ stim_type + ln_IBcv_30.s + IBzu_30 + s(subj_id, probe_num, bs="fs", m=1),
-              family = betar(), method = "REML", data = prb_dat )
+ibi.hr <- gam(HR ~ site + stim_type + ln_cvIBI.s + zuIBI + s(subj_id, probe_num, bs="fs", m=1),
+              family = betar(), method = "REML", data = dat )
 
-ibi.fa <- gam(FAR_u ~ stim_type + ln_IBcv_30.s + IBzu_30 + s(subj_id, probe_num, bs="fs", m=1),
-              family = betar(), method = "REML", data = prb_dat )
+ibi.fa <- gam(FAR ~ site + stim_type + ln_cvIBI.s + zuIBI + s(subj_id, probe_num, bs="fs", m=1),
+              family = betar(), method = "REML", data = dat )
 
-ibi.rs <- gam(RSmu_30 ~ stim_type + ln_IBcv_30.s + IBzu_30 + s(subj_id, probe_num, bs="fs", m=1),
-              family = gaussian(), method = "REML", data = filter(prb_dat, vRS_30==T) )
+ibi.rs <- gam(muRS ~ site + stim_type + ln_cvIBI.s + zuIBI + s(subj_id, probe_num, bs="fs", m=1),
+              family = gaussian(), method = "REML", data = filter(dat, nRS >= rThresh) )
 
-ibi.rv <- gam(RScv_30 ~ stim_type + ln_IBcv_30.s + IBzu_30 + s(subj_id, probe_num, bs="fs", m=1),
-              family = Gamma(), method = "REML", data = filter(prb_dat, vRS_30==T) )
-
-
+ibi.rv <- gam(cvRS ~ site + stim_type + ln_cvIBI.s + zuIBI + s(subj_id, probe_num, bs="fs", m=1),
+              family = tw(), method = "REML", data = filter(dat, nRS >= rThresh) )
 
 
-### plot figure
+
+# plot model coefficients
 
 s <- summary(ibi.ms)
 df <- data.frame( dv = c( "MW", "MW", "MB", "MB" ), 
                   iv = c( "m", "v", "m", "v" ), 
                   grp = c ( "s", "s", "s", "s" ),
-                  est = c( s$p.coeff["IBzu_10"], s$p.coeff["ln_IBcv_10.s"], s$p.coeff["IBzu_10.1"], s$p.coeff["ln_IBcv_10.s.1"]), 
-                  se = c( s$se["IBzu_10"], s$se["ln_IBcv_10.s"], s$se["IBzu_10.1"], s$se["ln_IBcv_10.s.1"] ) )
+                  est = c( s$p.coeff["zuIBI"], s$p.coeff["ln_cvIBI.s"], s$p.coeff["zuIBI.1"], s$p.coeff["ln_cvIBI.s.1"]), 
+                  se = c( s$se["zuIBI"], s$se["ln_cvIBI.s"], s$se["zuIBI.1"], s$se["ln_cvIBI.s.1"] ) )
 s <- summary(ibi.vo)
 df <- df %>%
   add_row( dv = "vigil", iv = c("m", "v"), grp = c("s", "s"),
-           est = c( s$p.coeff["IBzu_30"], s$p.coeff["ln_IBcv_30.s"]), 
-           se = c( s$se["ln_IBcv_30.s"], s$se["ln_IBcv_30.s"] ) )
+           est = c( s$p.coeff["zuIBI"], s$p.coeff["ln_cvIBI.s"]), 
+           se = c( s$se["zuIBI"], s$se["ln_cvIBI.s"] ) )
 s <- summary(ibi.pz)
 df <- df %>%
   add_row( dv = "pupil", iv = c("m", "v"), grp = c("o", "o"),
-           est = c( s$p.coeff["IBzu_30"], s$p.coeff["ln_IBcv_30.s"]), 
-           se = c( s$se["ln_IBcv_30.s"], s$se["ln_IBcv_30.s"] ) )
+           est = c( s$p.coeff["zuIBI"], s$p.coeff["ln_cvIBI.s"]), 
+           se = c( s$se["zuIBI"], s$se["ln_cvIBI.s"] ) )
 s <- summary(ibi.dp)
 df <- df %>%
   add_row( dv = "dp", iv = c("m", "v"), grp = c("o", "o"),
-           est = c( s$p.coeff["IBzu_30"], s$p.coeff["ln_IBcv_30.s"]), 
-           se = c( s$se["ln_IBcv_30.s"], s$se["ln_IBcv_30.s"] ) )
+           est = c( s$p.coeff["zuIBI"], s$p.coeff["ln_cvIBI.s"]), 
+           se = c( s$se["zuIBI"], s$se["ln_cvIBI.s"] ) )
+
 s <- summary(ibi.cn)
 df <- df %>%
   add_row( dv = "cn", iv = c("m", "v"), grp = c("o", "o"),
-           est = c( s$p.coeff["IBzu_30"], s$p.coeff["ln_IBcv_30.s"]), 
-           se = c( s$se["ln_IBcv_30.s"], s$se["ln_IBcv_30.s"] ) )
+           est = c( s$p.coeff["zuIBI"], s$p.coeff["ln_cvIBI.s"]), 
+           se = c( s$se["zuIBI"], s$se["ln_cvIBI.s"] ) )
+
 s <- summary(ibi.hr)
 df <- df %>%
   add_row( dv = "hr", iv = c("m", "v"), grp = c("o", "o"),
-           est = c( s$p.coeff["IBzu_30"], s$p.coeff["ln_IBcv_30.s"]), 
-           se = c( s$se["ln_IBcv_30.s"], s$se["ln_IBcv_30.s"] ) )
+           est = c( s$p.coeff["zuIBI"], s$p.coeff["ln_cvIBI.s"]), 
+           se = c( s$se["zuIBI"], s$se["ln_cvIBI.s"] ) )
+
 s <- summary(ibi.fa)
 df <- df %>%
   add_row( dv = "far", iv = c("m", "v"), grp = c("o", "o"),
-           est = c( s$p.coeff["IBzu_30"], s$p.coeff["ln_IBcv_30.s"]), 
-           se = c( s$se["ln_IBcv_30.s"], s$se["ln_IBcv_30.s"] ) )
+           est = c( s$p.coeff["zuIBI"], s$p.coeff["ln_cvIBI.s"]), 
+           se = c( s$se["zuIBI"], s$se["ln_cvIBI.s"] ) )
+
 s <- summary(ibi.rs)
 df <- df %>%
   add_row( dv = "mRS", iv = c("m", "v"), grp = c("o", "o"),
-           est = c( s$p.coeff["IBzu_30"], s$p.coeff["ln_IBcv_30.s"]), 
-           se = c( s$se["ln_IBcv_30.s"], s$se["ln_IBcv_30.s"] ) )
+           est = c( s$p.coeff["zuIBI"], s$p.coeff["ln_cvIBI.s"]), 
+           se = c( s$se["zuIBI"], s$se["ln_cvIBI.s"] ) )
+
 s <- summary(ibi.rv)
 df <- df %>%
   add_row( dv = "RSv", iv = c("m", "v"), grp = c("o", "o"),
-           est = c( s$p.coeff["IBzu_30"], s$p.coeff["ln_IBcv_30.s"]), 
-           se = c( s$se["ln_IBcv_30.s"], s$se["ln_IBcv_30.s"] ) )
+           est = c( s$p.coeff["zuIBI"], s$p.coeff["ln_cvIBI.s"]), 
+           se = c( s$se["zuIBI"], s$se["ln_cvIBI.s"] ) )
 
 
 df$dv <- factor(df$dv, 
                 levels = c("RSv", "mRS", "far", "hr", "cn", "dp", "pupil", "vigil", "MB", "MW"), 
-                labels = c("RS variability", "Response speed", "False alarm rate", "Hit rate", "Bias (c)", "Sensitivity (d')", "Pupil size", "Vigilance", "Mind-blanking", "Mind-wandering") )
+                labels = c("Response speed\n variability", "Response speed", "False alarm rate", "Hit rate", "Bias (c)", "Sensitivity (d')", "Pupil size", "Vigilance", "Mind-blanking", "Mind-wandering") )
 df$iv <- factor(df$iv,
                 levels = c("m", "v"),
-                labels = c("IBI mean", "IBI variability") )
+                labels = c("IBI duration", "IBI variability") )
 df$grp <- factor(df$grp,
                 levels = c("s", "o") )
 
 
 df_scales <- data.frame(
   Panel = c("m", "v"),
-  xmin = c(-.9, -.7),
-  xmax = c(.9, .7)
+  xmin = c(-.87, -.87),
+  xmax = c(.87, .87)
 )
 df_scales <- split(df_scales, df_scales$Panel)
 
@@ -344,15 +286,15 @@ subj <- ggplot(filter(df, grp=="s"), aes(y = dv, x = est, xmin = est-(1.96*se), 
   geom_point(size = 2) + geom_errorbarh(height=0) + 
   scale_color_manual(values = c("Mind-wandering" = "#ff801a", "Mind-blanking" = "#7aa6cc", "Vigilance" = "#d11141")) +
   facet_wrap(.~iv, scales = "free") +
-  ggh4x::facetted_pos_scales(x = scalesx, y = scalesy) +
-  font_theme
+  facetted_pos_scales(x = scalesx, y = scalesy) +
+  font_theme + theme(legend.position = "none")
 
 
 
 df_scales <- data.frame(
   Panel = c("m", "v"),
-  xmin = c(-.27, -.27),
-  xmax = c(.27, .27)
+  xmin = c(-.24, -.24),
+  xmax = c(.24, .24)
 )
 df_scales <- split(df_scales, df_scales$Panel)
 
@@ -375,24 +317,88 @@ obj <- ggplot(filter(df, grp=="o"), aes(y = dv, x = est, xmin = est-(1.96*se), x
   geom_vline(xintercept = 0, linetype = "dashed", alpha = .5) + 
   geom_point(size = 2) + geom_errorbarh(height=0) + 
   scale_color_manual(values = c("Pupil size" = "#8470FF", "Sensitivity (d')" = "#A5D6A7", "Bias (c)" = "#A5D6A7", 
-                                "Hit rate" = "#A5D6A7", "False alarm rate" = "#A5D6A7", "Response speed" = "#ffc425", "RS variability" = "#ffc425")) +
+                                "Hit rate" = "#A5D6A7", "False alarm rate" = "#A5D6A7", "Response speed" = "#ffc425", "Response speed\n variability" = "#ffc425")) +
   facet_wrap(.~iv, scales = "free") +
-  ggh4x::facetted_pos_scales(x = scalesx, y = scalesy) +
-  font_theme + theme(strip.text.x = element_blank())
+  facetted_pos_scales(x = scalesx, y = scalesy) +
+  font_theme + theme(strip.text.x = element_blank(), legend.position = "none")
   
 
 
-cowplot::plot_grid(NULL,
-                   subj, 
-                   obj,
-                   labels = c("", "A", "B"), vjust = .7,
-                   rel_heights = c(.01, .5, .7), align = "v", axis = "lr",
-                   nrow = 3)
-
-ggsave('figure2_betas.png', height = 12, width = 14, units = "cm", dpi=600, path = 'plots')
+plot_grid(NULL,
+          subj, 
+          obj,
+          labels = c("", "A", "B"), vjust = .7, hjust = -1.5,
+          rel_heights = c(.01, .5, .7), align = "v", axis = "lr",
+          nrow = 3)
 
 
+ggsave('figure2_betas.png', height = 12, width = 13, units = "cm", dpi=600, path = 'plots')
 
 
 
+### NoGo IBI analysis
+
+# import & recode variables
+dat <- read.csv("WIM_HB_IBI_NoGo.csv") %>% 
+  mutate(site = as.factor(ifelse(subj_id<300, "PBI", "MBI")),
+         subj_id = as.factor(subj_id),
+         stim_type = factor(stim_type, levels = c("D", "F"), labels = c("Digit", "Face")),
+         resp_type = factor(resp_type, levels = c("C", "F"), labels = c("Correct", "False")),
+         m_state = factor(ifelse(state>3, 3, state), levels = c("1", "2", "3"), labels = c("ON", "MW", "MB")),
+         vigil.o = as.ordered(vigil)
+  ) %>% 
+  pivot_longer(starts_with("IBI"), names_to = "index", values_to = "zuIBI") %>%
+  mutate(index = factor(index, levels = c("IBI_3", "IBI_2", "IBI_1", "IBI_0", "IBI.1", "IBI.2", "IBI.3"),
+                        labels = c("IBI-3", "IBI-2", "IBI-1", "IBI 0", "IBI+1", "IBI+2", "IBI+3") ),
+         index.o = as.ordered(index),
+         index = relevel(index, ref = "IBI 0")
+  )
+
+# replace NaN with NA
+dat[dat=="NaN"] <- NA
+
+# drop subjects who lack mstate variance
+cntMS <- dat %>% 
+  group_by(subj_id, m_state, .drop = FALSE) %>%
+  summarise( n = n() ) %>%
+  ungroup()
+
+excl <- cntMS$subj_id[which(cntMS$n==60)] 
+msdat <- dat[!dat$subj_id %in% excl, ]
+
+
+# IBI duration onto IBI sequence, response, state
+nogo <- gam(zuIBI ~ site + stim_type + index.o * resp_type * m_state + s(subj_id, probe_num, bs="fs", m=1),
+            family = gaussian(), method = "REML", data = msdat )
+
+
+# stats
+anova.gam(nogo)
+emmeans(nogo, consec~index.o)
+emm <- emmeans(nogo, consec ~ index.o * resp_type) 
+contrast(emm[[1]], interaction = "consec")
+
+
+# plot IBIs
+
+df <- as.data.frame(ggemmeans(nogo, c("index.o", "resp_type", "m_state")))
+df$IBI <- recode(df$x, 'IBI-3'='-3', 'IBI-2'='-2', 'IBI-1'='-1', 'IBI 0'='0', 'IBI+1'='+1', 'IBI+2'='+2', 'IBI+3'='+3')
+df$group <- recode(df$group, Correct = "Correct rejection", False = "False alarm")
+df$facet <- recode(df$facet, ON = "On-task", MW = "Mind-wandering", MB = "Mind-blanking" )
+strip <- strip_themed(background_x = elem_list_rect(fill = c("#199933", "#ff801a", "#7aa6cc")))
+
+
+ggplot( df, aes(x=IBI, y=predicted, ymax=predicted+std.error, ymin=predicted-std.error, col=group, shape=group) ) +
+  geom_point(size=2, position=position_dodge(width=0.4)) + 
+  geom_errorbar(width=0, position=position_dodge(width=0.4)) +
+  labs(y = "IBI duration (z.u.)", 
+       x = "IBI order (relative to NoGo trial)") +
+  scale_colour_brewer(palette = "Set1", direction = -1) +
+  ylim(-.2, .6) +
+  facet_wrap2(.~facet, strip=strip) +
+  font_theme +
+  theme(legend.position = c(0.15, 0.85), legend.title=element_blank() )
+
+
+ggsave('figure3_emms.png', height = 7, width = 14, units = "cm", dpi = 600, path = 'plots')
 
