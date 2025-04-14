@@ -8,6 +8,7 @@ addpath(genpath(path_eeglab))
 addpath(genpath(path_lmeEEG))
 
 %% batch process
+
 subjs = dir(fullfile(wim_preproc, 'bhi', 'MWI*_bhi.set'));
 
 load('WIM_HB_HEP.mat')
@@ -36,7 +37,7 @@ end
 %% permutations (MS only)
 seg_len = 40; % length of segment prior to probe for R-peak permutation (sec)
 nperms = 100; % number of times R-peak series permuted
-t_surr = nan(nperms, length(chanlocs), length(t), length(mod.CoefficientNames) ); % Initialize 
+t_surr = nan(nperms, length(chanlocs), length(t), size(Results(1).t_obs, 3) ); % Initialize 
 
 for np = 1:nperms
 
