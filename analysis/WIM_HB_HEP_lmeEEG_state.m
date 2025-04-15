@@ -62,4 +62,4 @@ for sx = 1:2 % state var (1 = MS; 2 = VIG)
 end
 
 % save results
-save('WIM_HB_HEP_lmeEEG.mat', 'Results', 'TAB', 'mform', 'twin', '-v7.3')
+save('WIM_HB_HEP_lmeEEG.mat', 'Results', 'TAB', 'mform', 'twin', 't', 'chanlocs', '-v7.3')
