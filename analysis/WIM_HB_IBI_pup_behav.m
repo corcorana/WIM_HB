@@ -16,8 +16,10 @@ rt_thresh = 300; % RT cutoff (ms) -- exclude responses faster than this from res
 ep_len = 10; % preprobe epoch length (s) -- period prior to probe onset
 
 nexc = nan(length(subjs),2);
+bn = nan(6,length(subjs));
 tabs = [];
 dtab = [];
+
 for ix = 1 :length(subjs)
     
     snum = str2double(subjs(ix).name(4:6));
@@ -29,6 +31,12 @@ for ix = 1 :length(subjs)
     % load corrected ECG data
     ECG = pop_loadset( 'filename', subjs(ix).name, 'filepath', fullfile(wim_preproc, 'ecg') );
     fs = ECG.srate;
+
+    % collect number of trials per block
+    for bx = 1:6
+        tmp = ECG.test_res(ECG.test_res(:,1)==bx,4);
+        bn(bx,ix) = tmp(end);
+    end
 
     % get RR interval latencies and calculate IBIs
     rri = epochIBI(ECG);
@@ -72,7 +80,7 @@ for ix = 1 :length(subjs)
         % load preprocessed pupil data
         load(fname)
         events = EL_events.Events;
-    
+
         % epoched estimates
         pon = regexp(events.type, '^P[1-9]$|^P10$'); % events marking probe onset
         poff = regexp(events.type, '^EP[1-9]$|^EP10$'); % events marking probe offset
@@ -86,7 +94,6 @@ for ix = 1 :length(subjs)
             tp = tsta(ex):tend(ex);
             pup{1,ex} = EL_data.time(EL_data.time>tsta(ex) & EL_data.time<tend(ex) )'; % latencies
             pup{2,ex} = EL_data.filt_pupilSize(EL_data.time>tsta(ex) & EL_data.time<tend(ex) )'; % filtered pup size
-            % pup{3,ex} = downsample(pup{2,ex}, EL_headers.Fs/lfs); % downsample to match IBI timeseries
         end
         muPup = mean(cell2mat(pup(2,:)), 'omitnan'); sdPup = std(cell2mat(pup(2,:)), 'omitnan');
         pup(3,:) = cellfun( @(x) {(x-muPup)/sdPup}, pup(2,:) ); % z-normalise
@@ -94,12 +101,11 @@ for ix = 1 :length(subjs)
 
         % compile summary statistics derived from preprobe epochs
         ep_on = tend-ep_len*EL_headers.Fs;
-        
         ee = nan(numel(ep_on),3);
         for ex = 1:size(ee,1)
             ee(ex,1) = mean( pup{2,ex}(pup{1,ex}>=ep_on(ex)), 'omitnan' ); 
             ee(ex,2) = mean( pup{3,ex}(pup{1,ex}>=ep_on(ex)), 'omitnan' ); 
-            ee(ex,3) = sum(~isnan(pup{3,ex}(pup{1,ex}>=ep_on(ex)))) / (ep_len*EL_headers.Fs);
+            ee(ex,3) = sum(~isnan(pup{3,ex}(pup{1,ex}>=ep_on(ex)))) / length(pup{3,ex}(pup{1,ex}>=ep_on(ex)));
         end
 
     else
