@@ -10,6 +10,12 @@ You can access the data files on which these scripts operate from the accompanyi
 In order to reproduce the analyses reported in the manuscript, first download/clone this repository into a suitable directory and navigate to the `localdef_WIM_HB.m` script.
 You will need to modify this script in order to define local paths to the data (which you will need to download from the [OSF repository](https://osf.io/ey3ca/)), as well as the requisite *MATLAB* toolboxes.
 
+Scripts for EEG, ECG, and eye-tracker preprocessing are located in the `preproc` subdirectory.
+The pipeline can be run in its entirety via the high-level script `WIM_HB_preproc_pipeline.m`.
+Preprocessed files can then be called by relevant scripts in the `analysis` subdirectory to emulate the signal processing and mixed-effects modelling reported in the manuscript.
+All `MATLAB` analysis scripts can be invoked by running `WIM_HB_analysis_pipeline.m`.
+The results of these analyses can be visualised by running the `plotHEP.m` and `plotGCMI.m` scripts (`analysis\plots` subdirectory).
+
 ## Citation
 If the materials archived here are useful for your own research, please cite this repository including the appropriate [release version](#current-release) information (year and doi; see below for details):
 
