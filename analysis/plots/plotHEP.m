@@ -114,9 +114,9 @@ annotation("textbox", str="B", FontSize = 24, FontWeight = 'bold', LineStyle = '
 
 % export
 try
-    export_fig( 'figure4AB', '-png' )
+    export_fig( 'figure4_erps', '-png' )
 catch
-    hgexport(gcf, 'figure4AB', hgexport('factorystyle'), 'Format', 'png'); 
+    hgexport(gcf, 'figure4_erps', hgexport('factorystyle'), 'Format', 'png'); 
 end
 
 
@@ -180,8 +180,8 @@ annotation("textbox", str= sprintf('[%g, %g] ms', tims(tc2(1))*1000, tims(tc2(en
 
 % export
 try
-    export_fig( 'figure4C', '-png' )
+    export_fig( 'figure4_topos', '-png' )
 catch
-    hgexport(gcf, 'figure4C', hgexport('factorystyle'), 'Format', 'png'); 
+    hgexport(gcf, 'figure4_topos', hgexport('factorystyle'), 'Format', 'png'); 
 end
 
