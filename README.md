@@ -4,11 +4,11 @@ Welcome to the GitHub repository for
 **When your heart isn't in it anymore: Cardiac correlates of task disengagement**, a combined EEG--ECG--pupillometry study of brain-body interaction during spontaneous cognition.
 
 This repository contains the scripts and functions required to reproduce the analyses reported in the associated [preprint](https://www.biorxiv.org/content/10.1101/2024.06.21.599851v1.abstract).
-You can access the data files on which these scripts operate from the accompanying [OSF repository](https://osf.io/ey3ca/).
+You can access the data files on which these scripts operate from the accompanying OSF repositories: [Melbourne data](https://osf.io/ey3ca/); [Paris data](https://osf.io/v9xsw/).
 
 ## Directions
 In order to reproduce the analyses reported in the manuscript, first download/clone this repository into a suitable directory and navigate to the `localdef_WIM_HB.m` script.
-You will need to modify this script in order to define local paths to the data (which you will need to download from the [OSF repository](https://osf.io/ey3ca/)), as well as the requisite *MATLAB* toolboxes.
+You will need to modify this script in order to define local paths to the data (which you will need to download from the OSF, as well as the requisite *MATLAB* toolboxes.
 
 Scripts for EEG, ECG, and eye-tracker preprocessing are located in the `preproc` subdirectory.
 The pipeline can be run in its entirety via the high-level script `WIM_HB_preproc_pipeline.m`.
