@@ -37,7 +37,7 @@ for ix = 1:length(subjs)
     EEG = pop_eegfiltnew(EEG, [], 40);
 
     % exclude non-trial data between blocks
-    if EEG.subj_info.subID(1) == '0'        % PBI data
+    if strcmp(sname(4), '0')        % PBI data
         f = find(strcmp({EEG.event.type}, 'S  2'));
         bsta = f(1);
         EEG = pop_select( EEG, 'nopoint', [EEG.event(1).latency, EEG.event(f(1)).latency] );
@@ -50,7 +50,7 @@ for ix = 1:length(subjs)
                 EEG = pop_select( EEG, 'nopoint', [EEG.event(bend(bx)).latency+EEG.srate*4, size(EEG.data, 2)] );
             end
         end
-    elseif EEG.subj_info.subID(1) == '3'    % MBI data
+    elseif strcmp(sname(4), '3')    % MBI data
         bsta = find(ismember({EEG.event.type}, 'B  1'));
         bsta = bsta(2:end);
         bend = find(ismember({EEG.event.type}, 'K  1'));

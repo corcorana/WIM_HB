@@ -32,7 +32,6 @@ for ix = 1: length(subjs)
     load([path_mbi_behav filesep behav_name.name]);
 
     % append vars to EEG struct
-    EEG.subj_info = SubjectInfo;
     EEG.probe_res = probe_res;
     EEG.test_res = test_res;
 

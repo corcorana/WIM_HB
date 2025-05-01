@@ -37,7 +37,6 @@ dat <- read.csv("WIM_HB_IBI_pup_behav.csv") %>%
          Cn = rowMeans(cbind(qnorm(HR), qnorm(FAR))),
          site = as.factor(ifelse(subj_id<100, "PBI", "MBI")),
          subj_id = as.factor(subj_id),
-         gender = as.factor(gender),
          stim_type = factor(stim_type, levels = c("D", "F"), labels = c("Digit", "Face")),
          prPup = ifelse(is.nan(prPup), 0, prPup),
          m_state = factor(ifelse(state>3, 3, state), levels = c("1", "2", "3"), labels = c("ON", "MW", "MB")),

@@ -59,15 +59,14 @@ for ix = 1 :length(subjs)
     ep_off = [ECG.event(ismember({ECG.event.type}, {'S  3' 'P  1'})).latency];
     ep_on = ep_off-fs*ep_len;
 
-    ii = nan(numel(ep_off),12);
+    ii = nan(numel(ep_off),10);
     for ex = 1:size(ii,1)
-        ii(ex,1:3) = [snum, double(ECG.subj_info.Gender), str2double(ECG.subj_info.Age)];
-        ii(ex,4:8) = [ex, ECG.probe_res(ex, [4,5,32,38])]; % prb num, block num, stim type, mstate, vigil
-        ii(ex,9) = mean( ibs{3,ex}(tmz{1,ex}(2):1/rfs:tmz{1,ex}(end)>ep_on(ex)/fs & tmz{1,ex}(2):1/rfs:tmz{1,ex}(end)<ep_off(ex)/fs) );
-        ii(ex,10) = std( ibs{3,ex}(tmz{1,ex}(2):1/rfs:tmz{1,ex}(end)>ep_on(ex)/fs & tmz{1,ex}(2):1/rfs:tmz{1,ex}(end)<ep_off(ex)/fs)) / ...
+        ii(ex,1:6) = [snum, ex, ECG.probe_res(ex, [4,5,32,38])]; % subj num, prb num, block num, stim type, mstate, vigil
+        ii(ex,7) = mean( ibs{3,ex}(tmz{1,ex}(2):1/rfs:tmz{1,ex}(end)>ep_on(ex)/fs & tmz{1,ex}(2):1/rfs:tmz{1,ex}(end)<ep_off(ex)/fs) );
+        ii(ex,8) = std( ibs{3,ex}(tmz{1,ex}(2):1/rfs:tmz{1,ex}(end)>ep_on(ex)/fs & tmz{1,ex}(2):1/rfs:tmz{1,ex}(end)<ep_off(ex)/fs)) / ...
             mean( ibs{3,ex}(tmz{1,ex}(2):1/rfs:tmz{1,ex}(end)>ep_on(ex)/fs & tmz{1,ex}(2):1/rfs:tmz{1,ex}(end)<ep_off(ex)/fs) );
-        ii(ex,11) = mean( (ibs{3,ex}(tmz{1,ex}(2):1/rfs:tmz{1,ex}(end)>ep_on(ex)/fs & tmz{1,ex}(2):1/rfs:tmz{1,ex}(end)<ep_off(ex)/fs)-muIBI) / sdIBI );
-        ii(ex,12) = sum(~isnan( ibs{2,ex}(ibs{1,ex}>ep_on(ex) & ibs{1,ex}<ep_off(ex)) ));
+        ii(ex,9) = mean( (ibs{3,ex}(tmz{1,ex}(2):1/rfs:tmz{1,ex}(end)>ep_on(ex)/fs & tmz{1,ex}(2):1/rfs:tmz{1,ex}(end)<ep_off(ex)/fs)-muIBI) / sdIBI );
+        ii(ex,10) = sum(~isnan( ibs{2,ex}(ibs{1,ex}>ep_on(ex) & ibs{1,ex}<ep_off(ex)) ));
     end
 
 
@@ -211,15 +210,12 @@ end
 %% output tables
 
 % epoch means
-varlabs = {'subj_id', 'gender', 'age', 'probe_num', 'block_num', 'stim_type', 'state', 'vigil', ...
+varlabs = {'subj_id', 'probe_num', 'block_num', 'stim_type', 'state', 'vigil', ...
     'muIBI', 'cvIBI', 'zuIBI', 'nIBI', 'muPup', 'zuPup', 'prPup', 'muRS', 'cvRS', 'nRS', 'CR', 'FA', 'H', 'M' };
 tab = array2table(tabs, 'VariableNames', varlabs);
 
 % recover 3 digit subject ID code
 tab.subj_id = num2str(tab.subj_id, '%03.f');
-
-% recover gender
-tab.gender = upper(char(tab.gender));
 
 % recode stim type
 tab.stim_type(tab.stim_type==1)='F';

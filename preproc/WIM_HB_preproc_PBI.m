@@ -11,8 +11,8 @@ if ~exist(proc_min, 'dir')
     mkdir(proc_min)
 end
 
-raw_eeg = dir([path_pbi_rawdat filesep 'sub*' filesep '*.vhdr']);
-behav = dir([path_pbi_rawdat filesep 'sub*' filesep '*behavres*.mat']);
+raw_eeg = dir(['D:\WIM\PBI\sub*' filesep '*.vhdr']);
+behav = dir(['D:\WIM\PBI\sub*' filesep '*behavres*.mat']);
 
 %% batch process
 
@@ -42,7 +42,6 @@ for ix = 1: length(raw_eeg)
     load([behav(ix).folder filesep behav_name]);
 
     % append vars to EEG struct
-    EEG.subj_info = SubjectInfo;
     EEG.probe_res = probe_res;
     EEG.test_res = test_res;
 
@@ -68,6 +67,9 @@ for ix = 1: length(raw_eeg)
     f = find(strcmp({EEG.event.type}, 'S 22'));
     bend = f(f>bsta(1));
     EEG = pop_select( EEG, 'point', [EEG.event(bsta(1)).latency-EEG.srate*6, EEG.event(bend(end)).latency+EEG.srate*10] );
+
+    % strip original filename
+    EEG.comments = [];
 
     % save .set files
     EEG = pop_saveset( EEG, 'filename', [sname, '_min.set'], 'filepath', proc_min);
