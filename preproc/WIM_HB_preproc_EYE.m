@@ -13,7 +13,7 @@ end
 
 %% Loop on files
 
-files = [dir([path_pbi_rawdat filesep 'sub*' filesep '*.edf']); dir([path_mbi_raweye filesep '*.edf'])];
+files = [dir(['D:\WIM\PBI\sub*' filesep '*.edf']); dir([path_mbi_raweye filesep '*.edf'])];
 
 for n=1:length(files)
     
@@ -33,7 +33,9 @@ for n=1:length(files)
     EL_headers=[];
     EL_headers=myedf.Header;
     EL_headers.Fs=unique(diff(myedf.timeline))*1000'; % in Hertz
-    
+    EL_headers.date = [];
+    EL_headers.raw = [];
+
     EL_data=[];
     EL_data.time=myedf.Samples.time;
     EL_data.pupilSize=myedf.Samples.pupilSize;
