@@ -24,7 +24,7 @@ cfrex = logspace(0, 1.2, 8)';
 fbands = [cfrex*.8, cfrex*1.2];
 
 % gcmi bias correction
-bc = true;
+bc = false;
 
 
 %% batch process
