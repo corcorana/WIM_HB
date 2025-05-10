@@ -6,13 +6,11 @@ close
 load cmaps
 load(['..' filesep 'WIM_HB_GCMI_lmeEEG.mat'])
 
-direc = {'H2B', 'B2H'};
-
 %% MI profiles
 
 xlabs = {'1.0', '1.5', '2.2', '3.3', '4.8', '7.2', '10.7', '15.8'};
 
-fh=figure; set(gcf,'units','centimeters', 'Position', [1 1 27 11])    
+figure; set(gcf,'units','centimeters', 'Position', [1 1 24 10])    
 
 subplot(1,2,1) % MS
 hold on;
@@ -40,7 +38,7 @@ ylabel('MI (bits)')
 title('Attentional State', 'FontWeight', 'bold', 'FontSize', 20)
 format_fig
     
-axes('Position',[.3 .47 .15 .35])
+axes('Position',[.31 .47 .15 .35])
 xlim([4.6, 8.4])
 xticklabels(xlabs(5:8))
 box on
@@ -93,11 +91,11 @@ h2pos = get(h2, 'position');
 format_fig
 
 % add annotation
-annotation("textbox", str="A", FontSize = 24, FontWeight = 'bold', LineStyle = 'none', Position = [0 1.03 0 0] );
+annotation("textbox", str="A", FontSize = 22, FontWeight = 'bold', LineStyle = 'none', Position = [0 1.03 0 0] );
 
 
-set(h1, 'position',[0.13 0.3 h1pos(3:4)], 'box', 'off')
-set(h2, 'position',[0.57 0.31 h2pos(3:4)], 'box', 'off')
+set(h1, 'position',[0.13 0.32 h1pos(3:4)], 'box', 'off')
+set(h2, 'position',[0.57 0.335 h2pos(3:4)], 'box', 'off')
 
 
 % export
@@ -132,7 +130,7 @@ hb_mbTopo = hb_mb;
 hb_mb(not(Results(1,1).x_MB.Mask))=0;
 
 
-figure; set(gcf,'units','centimeters', 'Position', [1 1 27 15])        
+figure; set(gcf,'units','centimeters', 'Position', [1 1 24 11])        
 ncol = size(bh_mwTopo,2)+1;
 ax = tight_subplot(4,ncol,[.01 .01]);
 posa = get(ax,'position');
@@ -148,7 +146,7 @@ for p = 1:ncol
     end
     if p == 2
         title(['\color[rgb]{',num2str(msCols(2,:)),'}', 'MW', '\color{black}', ' vs ', '\color[rgb]{',num2str(msCols(1,:)),'}', 'ON' ], ...
-                'FontSize', 16, 'FontWeight', 'Bold', 'interpreter', 'tex');
+                'FontSize', 12, 'FontWeight', 'Bold', 'interpreter', 'tex');
         set(get(gca,'title'), 'rotation', 90, 'Position', [-.6, 0.05])
     end
     
@@ -162,7 +160,7 @@ for p = 1:ncol
     end
     if p == 2
         title(['\color[rgb]{',num2str(msCols(3,:)),'}', 'MB', '\color{black}', ' vs ', '\color[rgb]{',num2str(msCols(1,:)),'}', 'ON' ], ...
-            'FontSize', 16, 'FontWeight', 'Bold', 'interpreter', 'tex')
+            'FontSize', 12, 'FontWeight', 'Bold', 'interpreter', 'tex')
         set(get(gca,'title'), 'rotation', 90, 'Position', [-.6, 0.05]')
     end
     
@@ -176,7 +174,7 @@ for p = 1:ncol
     end
     if p == 2
         title(['\color[rgb]{',num2str(msCols(2,:)),'}', 'MW', '\color{black}', ' vs ', '\color[rgb]{',num2str(msCols(1,:)),'}', 'ON' ], ...
-                'FontSize', 16, 'FontWeight', 'Bold', 'interpreter', 'tex');
+                'FontSize', 12, 'FontWeight', 'Bold', 'interpreter', 'tex');
         set(get(gca,'title'), 'rotation', 90, 'Position', [-.6, 0.05])
     end
     
@@ -190,12 +188,12 @@ for p = 1:ncol
     end
     if p == 2
         title(['\color[rgb]{',num2str(msCols(3,:)),'}', 'MB', '\color{black}', ' vs ', '\color[rgb]{',num2str(msCols(1,:)),'}', 'ON' ], ...
-            'FontSize', 16, 'FontWeight', 'Bold', 'interpreter', 'tex')
+            'FontSize', 12, 'FontWeight', 'Bold', 'interpreter', 'tex')
         set(get(gca,'title'), 'rotation', 90, 'Position', [-.6, 0.05]')
     end
 
     if p>1
-        subtitle( sprintf('[%.1f, %.1f]', fbands(p-1,1), fbands(p-1,2)), 'FontSize', 14, 'FontWeight', 'Bold')
+        subtitle( sprintf('[%.1f, %.1f]', fbands(p-1,1), fbands(p-1,2)), 'FontSize', 12, 'FontWeight', 'Bold')
         set(get(gca,'subtitle'), 'rotation', 0, 'Position', [0, -.8])
     end
 
@@ -203,7 +201,7 @@ end
 
 % add labels
 sgtitle( 'Attentional State', 'FontWeight', 'bold', 'FontSize', 20 )
-annotation("textbox", str="B", FontSize = 24, FontWeight = 'bold', LineStyle = 'none', Position = [0 1.02 0 0] );
+annotation("textbox", str="B", FontSize = 22, FontWeight = 'bold', LineStyle = 'none', Position = [0 1.02 0 0] );
 
 % add cbar
 h = colorbar('LineWidth', 1.5);
@@ -216,7 +214,7 @@ set(h, 'Position', [.92, .385, .017, .25])
 % adjust panel spacing
 for sx=1:numel(posa)
     posb = posa{sx};
-    posb = [posb(1) , 0.05+posb(2)*.9, posb(3:4)];
+    posb = [posb(1) , 0.07+posb(2)*.9, posb(3:4)];
     set(ax(sx),'position',posb)
 end
 
@@ -225,10 +223,10 @@ end
 set(ax,'units','pix')
 % adjust figure size
 posf = get(gcf,'position');
-set(gcf,'position',[posf(1:2) posf(3)*1.05 posf(4)])
+set(gcf,'position',[posf(1:2) posf(3)*1.05 posf(4)*1.05])
 
 % add X axis label
-title('EEG frequency band (Hz)', 'FontSize', 18, 'FontWeight', 'Bold')
+title('EEG frequency band (Hz)', 'FontSize', 16, 'FontWeight', 'Bold')
 set(get(gca,'title'), 'Position', [-4.6, -1.2])
 
 
@@ -268,7 +266,7 @@ hb_v1Topo = hb_v1;
 hb_v1(not(Results(2,1).x_V1.Mask))=0;
 
 
-figure; set(gcf,'units','centimeters', 'Position', [1 1 27 23])        
+figure; set(gcf,'units','centimeters', 'Position', [1 1 24 15])        
 ncol = size(bh_v1Topo,2)+1;
 ax = tight_subplot(6,ncol,[.01 .01]);
 posa = get(ax,'position');
@@ -284,7 +282,7 @@ for p = 1:ncol
     end
     if p == 2
         title(['\color[rgb]{',num2str(cmap_rdylbu(3,:)),'}', 'V3', '\color{black}', ' vs ', '\color[rgb]{',num2str(cmap_rdylbu(4,:)),'}', 'V4' ], ...
-                'FontSize', 16, 'FontWeight', 'Bold', 'interpreter', 'tex');
+                'FontSize', 12, 'FontWeight', 'Bold', 'interpreter', 'tex');
         set(get(gca,'title'), 'rotation', 90, 'Position', [-.6, 0.05])
     end
     
@@ -298,7 +296,7 @@ for p = 1:ncol
     end
     if p == 2
         title(['\color[rgb]{',num2str(cmap_rdylbu(2,:)),'}', 'V2', '\color{black}', ' vs ', '\color[rgb]{',num2str(cmap_rdylbu(4,:)),'}', 'V4' ], ...
-            'FontSize', 16, 'FontWeight', 'Bold', 'interpreter', 'tex')
+            'FontSize', 12, 'FontWeight', 'Bold', 'interpreter', 'tex')
         set(get(gca,'title'), 'rotation', 90, 'Position', [-.6, 0.05]')
     end
     
@@ -312,7 +310,7 @@ for p = 1:ncol
     end
     if p == 2
         title(['\color[rgb]{',num2str(cmap_rdylbu(1,:)),'}', 'V1', '\color{black}', ' vs ', '\color[rgb]{',num2str(cmap_rdylbu(4,:)),'}', 'V4' ], ...
-            'FontSize', 16, 'FontWeight', 'Bold', 'interpreter', 'tex')
+            'FontSize', 12, 'FontWeight', 'Bold', 'interpreter', 'tex')
         set(get(gca,'title'), 'rotation', 90, 'Position', [-.6, 0.05]')
     end
 
@@ -326,7 +324,7 @@ for p = 1:ncol
     end
     if p == 2
         title(['\color[rgb]{',num2str(cmap_rdylbu(3,:)),'}', 'V3', '\color{black}', ' vs ', '\color[rgb]{',num2str(cmap_rdylbu(4,:)),'}', 'V4' ], ...
-                'FontSize', 16, 'FontWeight', 'Bold', 'interpreter', 'tex');
+                'FontSize', 12, 'FontWeight', 'Bold', 'interpreter', 'tex');
         set(get(gca,'title'), 'rotation', 90, 'Position', [-.6, 0.05])
     end
 
@@ -340,7 +338,7 @@ for p = 1:ncol
     end
     if p == 2
         title(['\color[rgb]{',num2str(cmap_rdylbu(2,:)),'}', 'V2', '\color{black}', ' vs ', '\color[rgb]{',num2str(cmap_rdylbu(4,:)),'}', 'V4' ], ...
-            'FontSize', 16, 'FontWeight', 'Bold', 'interpreter', 'tex')
+            'FontSize', 12, 'FontWeight', 'Bold', 'interpreter', 'tex')
         set(get(gca,'title'), 'rotation', 90, 'Position', [-.6, 0.05]')
     end
 
@@ -354,12 +352,12 @@ for p = 1:ncol
     end
     if p == 2
         title(['\color[rgb]{',num2str(cmap_rdylbu(1,:)),'}', 'V1', '\color{black}', ' vs ', '\color[rgb]{',num2str(cmap_rdylbu(4,:)),'}', 'V4' ], ...
-            'FontSize', 16, 'FontWeight', 'Bold', 'interpreter', 'tex')
+            'FontSize', 12, 'FontWeight', 'Bold', 'interpreter', 'tex')
         set(get(gca,'title'), 'rotation', 90, 'Position', [-.6, 0.05]')
     end
 
     if p>1
-        subtitle( sprintf('[%.1f, %.1f]', fbands(p-1,1), fbands(p-1,2)), 'FontSize', 14, 'FontWeight', 'Bold')
+        subtitle( sprintf('[%.1f, %.1f]', fbands(p-1,1), fbands(p-1,2)), 'FontSize', 12, 'FontWeight', 'Bold')
         set(get(gca,'subtitle'), 'rotation', 0, 'Position', [0, -.8])
     end
 end
@@ -368,7 +366,7 @@ end
 
 % add labels
 sgtitle( 'Vigilance Level', 'FontWeight', 'bold', 'FontSize', 20 )
-annotation("textbox", str="C", FontSize = 24, FontWeight = 'bold', LineStyle = 'none', Position = [0 1.01 0 0] );
+annotation("textbox", str="C", FontSize = 22, FontWeight = 'bold', LineStyle = 'none', Position = [0 1.01 0 0] );
 
 % add cbar
 h = colorbar('LineWidth', 1.5);
@@ -376,7 +374,7 @@ ylabel(h, 't-value', 'rotation',270, 'VerticalAlignment','bottom', 'FontSize', 1
 % reset size of final topoplot
 set(ax(p+ncol),'position',posa{p+ncol})
 % adjust cbar positioning
-set(h, 'Position', [.92, .42, .017, .17])
+set(h, 'Position', [.92, .41, .017, .19])
 
 % adjust panel spacing
 for sx=1:numel(posa)
@@ -393,7 +391,7 @@ posf = get(gcf,'position');
 set(gcf,'position',[posf(1:2) posf(3)*1.05 posf(4)])
 
 % add X axis label
-title('EEG frequency band (Hz)', 'FontSize', 18, 'FontWeight', 'Bold')
+title('EEG frequency band (Hz)', 'FontSize', 16, 'FontWeight', 'Bold')
 set(get(gca,'title'), 'Position', [-4.6, -1.2])
 
 
