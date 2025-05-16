@@ -13,8 +13,10 @@ You will need to modify this script in order to define local paths to the data (
 Scripts for EEG, ECG, and eye-tracker preprocessing are located in the `preproc` subdirectory.
 The pipeline can be run in its entirety via the high-level script `WIM_HB_preproc_pipeline.m`.
 Preprocessed files can then be called by relevant scripts in the `analysis` subdirectory to emulate the signal processing and mixed-effects modelling reported in the manuscript.
+
 All `MATLAB` analysis scripts can be invoked by running `WIM_HB_analysis_pipeline.m`.
-The results of these analyses can be visualised by running the `plotHEP.m` and `plotGCMI.m` scripts (`analysis\plots` subdirectory).
+Note, the mixed-effects analysis can be run independently of the preprocessing pipeline by downloading the relevant intermediary datafiles from the `analysis` component of the [Paris repository](https://osf.io/pc74r/).
+The results of these analysis procesdures can be visualised by running the `plotHEP.m` and `plotGCMI.m` scripts (`analysis\plots` subdirectory).
 
 ## Citation
 If the materials archived here are useful for your own research, please cite this repository including the appropriate [release version](#current-release) information (year and doi; see below for details):
