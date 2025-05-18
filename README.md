@@ -1,9 +1,9 @@
 # WIM_HB
 
 Welcome to the GitHub repository for 
-**When your heart isn't in it anymore: Cardiac correlates of task disengagement**, a combined EEG--ECG--pupillometry study of brain-body interaction during spontaneous cognition.
+**When your heart isn't in it anymore: Cardiac correlates of task disengagement**, a combined EEG-ECG-pupillometry study of brain-body interaction during spontaneous cognition.
 
-This repository contains the scripts and functions required to reproduce the analyses reported in the associated [preprint](https://www.biorxiv.org/content/10.1101/2024.06.21.599851v1.abstract).
+This repository contains the scripts and functions required to reproduce the analyses reported in the associated [preprint](https://www.biorxiv.org/content/10.1101/2024.06.21.599851v2).
 You can access the data files on which these scripts operate from the accompanying OSF repositories: [Melbourne data](https://osf.io/ey3ca/); [Paris data](https://osf.io/v9xsw/).
 
 ## Directions
@@ -16,6 +16,7 @@ Preprocessed files can then be called by relevant scripts in the `analysis` subd
 
 All `MATLAB` analysis scripts can be invoked by running `WIM_HB_analysis_pipeline.m`.
 Note, the mixed-effects analysis can be run independently of the preprocessing pipeline by downloading the relevant intermediary datafiles from the `analysis` component of the [Paris repository](https://osf.io/pc74r/).
+
 The results of these analysis procesdures can be visualised by running the `plotHEP.m` and `plotGCMI.m` scripts (`analysis\plots` subdirectory).
 
 ## Citation
