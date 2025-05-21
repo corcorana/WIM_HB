@@ -4,14 +4,16 @@ close
 
 %% PLOT RESULTS OF HEP
 load cmaps
-load(['..' filesep 'WIM_HB_HEP_lmeEEG.mat'])
+load(['..' filesep 'WIM_HB_HEP_lmeEEG_state.mat'])
+load(['..' filesep 'WIM_HB_HEP_lmeEEG_surrog.mat'])
+
 
 % tmaps & clusters
 mT1 = Results(1).x_MW.Obs;
 mT1topo = mT1;
 mT1(not(Results(1).x_MW.Mask))=0;
 
-t_pos = sort(Results(1).t_surr(:,:,twin,6), 1);
+t_pos = sort(t_surr(:,:,twin,6), 1);
 tp = squeeze( prctile(t_pos,97.5,1) );
 surr_mask = mT1 > tp;
 mT1(not(surr_mask))=0;

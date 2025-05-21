@@ -12,7 +12,7 @@ addpath(genpath(path_lmeEEG))
 subjs = dir(fullfile(wim_preproc, 'bhi', 'MWI*_bhi.set'));
 
 load('WIM_HB_HEP.mat')
-load('WIM_HB_HEP_lmeEEG.mat')
+load('WIM_HB_HEP_lmeEEG_state.mat')
 
 %% import & process data to be permuted
 
@@ -94,7 +94,6 @@ for np = 1:nperms
 
 end
 
-Results(1).t_surr = t_surr;
 
 % save results
-save('WIM_HB_HEP_lmeEEG.mat', 'Results', '-append')
+save('WIM_HB_HEP_lmeEEG_surrog.mat', 't_surr')
