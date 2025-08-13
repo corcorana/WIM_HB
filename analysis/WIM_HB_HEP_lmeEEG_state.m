@@ -17,7 +17,7 @@ P = cat(1, allHEP{:,2});
 
 % factors
 sid = categorical( P(:,1) ); 
-pid = P(:,2);
+pid = categorical( P(:,2) );
 site = categorical(P(:,1)<100, 0:1, {'MBI', 'PBI'} );
 stim = categorical(P(:,3), 1:2, {'FACE', 'DIGIT'} );
 ms = categorical(P(:,4), 1:3, {'ON', 'MW', 'MB'});
@@ -27,7 +27,7 @@ ibs = readtable("WIM_HB_IBI_pup_behav.csv");
 TAB = [ table(sid, pid, site, stim, ms, vig), table(ibs.zuIBI, normalize(log(ibs.cvIBI)), 'VariableNames', {'muIBI', 'cvIBI'}) ];
 
 % analysis 
-mform = 'y~site+stim+muIBI+cvIBI+x+(1|sid)'; %  model formula 
+mform = 'y~site+stim+muIBI+cvIBI+x+(1|sid)+(1|pid)'; %  model formula 
 nperms = 1000; % number of design matrix permutations
 twin = t>=.2 & t<=.6; % time-window for TFCE (s)
 
@@ -48,14 +48,14 @@ for sx = 1:2 % state var (1 = MS; 2 = VIG)
     dat = DAT(:,:,eps);
 
     % fit mixed models & perform mass univariate regression
-    [Results(sx).t_obs, Results(sx).betas, Results(sx).se, mEEG, X, mod] = lmeEEG_fitMods(dat, tab, mform);
+    [Results(sx).t_obs, Results(sx).betas, Results(sx).se, Results(sx).cnams, mEEG, X] = lmeEEG_fitMods(dat, tab, mform);
     
     % permute design matrix
     Results(sx).t_perms = lmeEEG_permute(mEEG, X, tab, nperms);
  
     % apply TFCE
     for jx = 2:size(X,2)
-        Results(sx).(matlab.lang.makeValidName(mod.CoefficientNames{jx})) = lmeEEG_TFCE( ...
+        Results(sx).(matlab.lang.makeValidName(Results(sx).cnams{jx})) = lmeEEG_TFCE( ...
             squeeze(Results(sx).t_obs(:,twin,jx)), squeeze(Results(sx).t_perms(:,:,twin,jx)), chanlocs, [0.66 2]);
     end
 

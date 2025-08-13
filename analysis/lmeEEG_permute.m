@@ -1,6 +1,7 @@
 function t_perms = lmeEEG_permute(mEEG, X, tab, nperms)
 
 rperms = lmeEEG_permutations(tab.sid, nperms); % nperms within-subjects permutations of X (for stimuli-within-condition designs) 
+
 t_perms = nan(nperms, size(mEEG,1), size(mEEG,2), size(X,2)); % Initialize t-map
 
 for np = 1:nperms

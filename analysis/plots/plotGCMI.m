@@ -8,6 +8,10 @@ load(['..' filesep 'WIM_HB_GCMI_lmeEEG.mat'])
 
 %% MI profiles
 
+% index cols from design matrix
+mw = find(contains(Results(1).cnams, 'x_MW')); mb = find(contains(Results(1).cnams, 'x_MB'));
+v3 = find(contains(Results(2).cnams, 'x_V3')); v2 = find(contains(Results(2).cnams, 'x_V2')); v1 = find(contains(Results(2).cnams, 'x_V1'));
+
 xlabs = {'1.0', '1.5', '2.2', '3.3', '4.8', '7.2', '10.7', '15.8'};
 
 figure; set(gcf,'units','centimeters', 'Position', [1 1 24 10])    
@@ -18,12 +22,12 @@ hold on;
 x = [(1:8)-.25; 1:8; (1:8)+.25]';
 
 y = [mean( [Results(1,1).betas(:,:,1); Results(1,2).betas(:,:,1)] ); ...
-    mean( [Results(1,1).betas(:,:,1)+Results(1,1).betas(:,:,4); Results(1,2).betas(:,:,1)+Results(1,2).betas(:,:,4)] ); ...
-    mean( [Results(1,1).betas(:,:,1)+Results(1,1).betas(:,:,5); Results(1,2).betas(:,:,1)+Results(1,2).betas(:,:,5)] ) ]';
+    mean( [Results(1,1).betas(:,:,1)+Results(1,1).betas(:,:,mw); Results(1,2).betas(:,:,1)+Results(1,2).betas(:,:,mw)] ); ...
+    mean( [Results(1,1).betas(:,:,1)+Results(1,1).betas(:,:,mb); Results(1,2).betas(:,:,1)+Results(1,2).betas(:,:,mb)] ) ]';
 
 sd = [std( [Results(1,1).betas(:,:,1); Results(1,2).betas(:,:,1)] ); ...
-    std( [Results(1,1).betas(:,:,1)+Results(1,1).betas(:,:,4); Results(1,2).betas(:,:,1)+Results(1,2).betas(:,:,4)] ); ...
-    std( [Results(1,1).betas(:,:,1)+Results(1,1).betas(:,:,5); Results(1,2).betas(:,:,1)+Results(1,2).betas(:,:,5)] ) ]';
+    std( [Results(1,1).betas(:,:,1)+Results(1,1).betas(:,:,mw); Results(1,2).betas(:,:,1)+Results(1,2).betas(:,:,mw)] ); ...
+    std( [Results(1,1).betas(:,:,1)+Results(1,1).betas(:,:,mb); Results(1,2).betas(:,:,1)+Results(1,2).betas(:,:,mb)] ) ]';
 
 errorbar( x, y, sd, 'LineStyle', 'none', 'Capsize', 0, 'LineWidth', 1.5, 'Color', 'k');
 scatter( x, y, 75, msCols, 'filled', 'd' );
@@ -56,14 +60,14 @@ hold on;
 x = [(1:8)-.3; (1:8)-.1; (1:8)+.1; (1:8)+.3]';
 
 y = [mean( [Results(2,1).betas(:,:,1); Results(2,2).betas(:,:,1)] ); ... % V4
-    mean( [Results(2,1).betas(:,:,1)+Results(2,1).betas(:,:,4); Results(2,2).betas(:,:,1)+Results(2,2).betas(:,:,4)] ); ... % V3
-    mean( [Results(2,1).betas(:,:,1)+Results(2,1).betas(:,:,5); Results(2,2).betas(:,:,1)+Results(2,2).betas(:,:,5)] ); ... % V2
-    mean( [Results(2,1).betas(:,:,1)+Results(2,1).betas(:,:,6); Results(2,2).betas(:,:,1)+Results(2,2).betas(:,:,6)] ) ]'; % V1
+    mean( [Results(2,1).betas(:,:,1)+Results(2,1).betas(:,:,v3); Results(2,2).betas(:,:,1)+Results(2,2).betas(:,:,v3)] ); ...
+    mean( [Results(2,1).betas(:,:,1)+Results(2,1).betas(:,:,v2); Results(2,2).betas(:,:,1)+Results(2,2).betas(:,:,v2)] ); ...
+    mean( [Results(2,1).betas(:,:,1)+Results(2,1).betas(:,:,v1); Results(2,2).betas(:,:,1)+Results(2,2).betas(:,:,v1)] ) ]'; 
 
 sd = [std( [Results(2,1).betas(:,:,1); Results(2,2).betas(:,:,1)] ); ...
-    std( [Results(2,1).betas(:,:,1)+Results(2,1).betas(:,:,4); Results(2,2).betas(:,:,1)+Results(2,2).betas(:,:,4)] ); ...
-    std( [Results(2,1).betas(:,:,1)+Results(2,1).betas(:,:,5); Results(2,2).betas(:,:,1)+Results(2,2).betas(:,:,5)] ); ...
-    std( [Results(2,1).betas(:,:,1)+Results(2,1).betas(:,:,6); Results(2,2).betas(:,:,1)+Results(2,2).betas(:,:,6)] ) ]';
+    std( [Results(2,1).betas(:,:,1)+Results(2,1).betas(:,:,v3); Results(2,2).betas(:,:,1)+Results(2,2).betas(:,:,v3)] ); ...
+    std( [Results(2,1).betas(:,:,1)+Results(2,1).betas(:,:,v2); Results(2,2).betas(:,:,1)+Results(2,2).betas(:,:,v2)] ); ...
+    std( [Results(2,1).betas(:,:,1)+Results(2,1).betas(:,:,v1); Results(2,2).betas(:,:,1)+Results(2,2).betas(:,:,v1)] ) ]';
 
 errorbar( x, y, sd, 'LineStyle', 'none', 'Capsize', 0, 'LineWidth', 1.5, 'Color', 'k');
 scatter( x, y, 75, flipud(cmap_rdylbu(1:4,:)), 'filled', 'd' );
@@ -107,11 +111,10 @@ end
 
 
 
-%% MI topos
+%% MS topos
 
 ch = ~matches({chanlocs.labels}, {'FT9', 'FT10'}); % remove skirt from topos
 
-% MS
 
 bh_mw = Results(1,2).x_MW.Obs;
 bh_mwTopo = bh_mw;
@@ -130,19 +133,19 @@ hb_mbTopo = hb_mb;
 hb_mb(not(Results(1,1).x_MB.Mask))=0;
 
 
-figure; set(gcf,'units','centimeters', 'Position', [1 1 24 11])        
+figure; set(gcf,'units','centimeters', 'Position', [1 1 24 15])        
 ncol = size(bh_mwTopo,2)+1;
-ax = tight_subplot(4,ncol,[.01 .01]);
+ax = tight_subplot(6,ncol,[.01 .01]);
+set(ax,'Visible','off')
 posa = get(ax,'position');
 for p = 1:ncol
 
-    axes(ax(p))
+    axes(ax(p+ncol))
     try
     topoplot(bh_mwTopo(ch,p-1), chanlocs(ch), 'style', 'map', 'gridscale', 300, 'colormap', cmap_rdbu, ...
         'maplimits', [-4 4], 'emarker',{'.',[.5 .5 .5],[],1},'emarker2',{find(sum(bh_mw(ch,p-1)<0,2)),'o','y',4,1} );
     format_fig
     catch
-        set(gca,'Visible','off')
     end
     if p == 2
         title(['\color[rgb]{',num2str(msCols(2,:)),'}', 'MW', '\color{black}', ' vs ', '\color[rgb]{',num2str(msCols(1,:)),'}', 'ON' ], ...
@@ -150,13 +153,12 @@ for p = 1:ncol
         set(get(gca,'title'), 'rotation', 90, 'Position', [-.6, 0.05])
     end
     
-    axes(ax(p+ncol))
+    axes(ax(p+ncol*2))
     try
     topoplot(bh_mbTopo(ch,p-1), chanlocs(ch), 'style', 'map', 'gridscale', 300, 'colormap', cmap_rdbu, ...
         'maplimits', [-4 4], 'emarker',{'.',[.5 .5 .5],[],1},'emarker2',{find(sum(bh_mb(ch,p-1)<0,2)),'o','y',4,1} );
     format_fig
     catch
-        set(gca,'Visible','off')
     end
     if p == 2
         title(['\color[rgb]{',num2str(msCols(3,:)),'}', 'MB', '\color{black}', ' vs ', '\color[rgb]{',num2str(msCols(1,:)),'}', 'ON' ], ...
@@ -164,13 +166,12 @@ for p = 1:ncol
         set(get(gca,'title'), 'rotation', 90, 'Position', [-.6, 0.05]')
     end
     
-    axes(ax(p+ncol*2))
+    axes(ax(p+ncol*3))
     try
     topoplot(hb_mwTopo(ch,p-1), chanlocs(ch), 'style', 'map', 'gridscale', 300, 'colormap', cmap_rdbu, ...
         'maplimits', [-4 4], 'emarker',{'.',[.5 .5 .5],[],1},'emarker2',{find(sum(hb_mw(ch,p-1)<0,2)),'o','y',4,1} );
     format_fig
     catch
-        set(gca,'Visible','off')
     end
     if p == 2
         title(['\color[rgb]{',num2str(msCols(2,:)),'}', 'MW', '\color{black}', ' vs ', '\color[rgb]{',num2str(msCols(1,:)),'}', 'ON' ], ...
@@ -178,13 +179,12 @@ for p = 1:ncol
         set(get(gca,'title'), 'rotation', 90, 'Position', [-.6, 0.05])
     end
     
-    axes(ax(p+ncol*3))
+    axes(ax(p+ncol*4))
     try
     topoplot(hb_mbTopo(ch,p-1), chanlocs(ch), 'style', 'map', 'gridscale', 300, 'colormap', cmap_rdbu, ...
         'maplimits', [-4 4], 'emarker',{'.',[.5 .5 .5],[],1},'emarker2',{find(sum(hb_mb(ch,p-1)<0,2)),'o','y',4,1} );
     format_fig
     catch
-        set(gca,'Visible','off')
     end
     if p == 2
         title(['\color[rgb]{',num2str(msCols(3,:)),'}', 'MB', '\color{black}', ' vs ', '\color[rgb]{',num2str(msCols(1,:)),'}', 'ON' ], ...
@@ -198,10 +198,8 @@ for p = 1:ncol
     end
 
 end
-
-% add labels
-sgtitle( 'Attentional State', 'FontWeight', 'bold', 'FontSize', 20 )
-annotation("textbox", str="B", FontSize = 22, FontWeight = 'bold', LineStyle = 'none', Position = [0 1.02 0 0] );
+ 
+%%
 
 % add cbar
 h = colorbar('LineWidth', 1.5);
@@ -209,28 +207,38 @@ ylabel(h, 't-value', 'rotation',270, 'VerticalAlignment','bottom', 'FontSize', 1
 % reset size of final topoplot
 set(ax(p+ncol),'position',posa{p+ncol})
 % adjust cbar positioning
-set(h, 'Position', [.92, .385, .017, .25])
+set(h, 'Position', [.88, .44, .017, .22])
 
 % adjust panel spacing
-for sx=1:numel(posa)
-    posb = posa{sx};
-    posb = [posb(1) , 0.07+posb(2)*.9, posb(3:4)];
+for sx = 1:numel(posa)/2
+    posb = get(ax(sx),'position');
+    posb = [posb(1)*.9, .08+posb(2), posb(3:4)];
+    set(ax(sx),'position',posb)
+end
+for sx = numel(posa)/2+1:numel(posa)
+    posb = get(ax(sx),'position');
+    posb = [posb(1)*.9, .05+posb(2), posb(3:4)];
     set(ax(sx),'position',posb)
 end
 
-
 % Set everything to units pixels (avoids dynamic reposition)
 set(ax,'units','pix')
+
 % adjust figure size
 posf = get(gcf,'position');
-set(gcf,'position',[posf(1:2) posf(3)*1.05 posf(4)*1.05])
+set(gcf,'position',[posf(1:3) posf(4)*1.03])
 
 % add X axis label
 title('EEG frequency band (Hz)', 'FontSize', 16, 'FontWeight', 'Bold')
-set(get(gca,'title'), 'Position', [-4.6, -1.2])
+set(get(gca,'title'), 'Position', [-4.2, -1.2])
+
+% add labels
+%sgtitle( 'Attentional State', 'FontWeight', 'bold', 'FontSize', 20 )
+annotation("textbox", str="B", FontSize = 22, FontWeight = 'bold', LineStyle = 'none', Position = [0 .95 0 0] );
+annotation("textbox", str="Attentional State", FontSize = 20, FontWeight = 'bold', LineStyle = 'none', Position = [.38 .92 5 0] );
 
 
-% export
+%% export
 try
     export_fig( 'figure5_topoAS', '-png', '-transparent' )
 catch
@@ -239,7 +247,7 @@ end
 
 
 
-%% VIG
+%% VIG topos
 
 bh_v3 = Results(2,2).x_V3.Obs;
 bh_v3Topo = bh_v3;
@@ -361,10 +369,9 @@ for p = 1:ncol
         set(get(gca,'subtitle'), 'rotation', 0, 'Position', [0, -.8])
     end
 end
-    
-    
+ 
 
-% add labels
+%% add labels
 sgtitle( 'Vigilance Level', 'FontWeight', 'bold', 'FontSize', 20 )
 annotation("textbox", str="C", FontSize = 22, FontWeight = 'bold', LineStyle = 'none', Position = [0 1.01 0 0] );
 
@@ -374,25 +381,30 @@ ylabel(h, 't-value', 'rotation',270, 'VerticalAlignment','bottom', 'FontSize', 1
 % reset size of final topoplot
 set(ax(p+ncol),'position',posa{p+ncol})
 % adjust cbar positioning
-set(h, 'Position', [.92, .41, .017, .19])
+set(h, 'Position', [.88, .4, .017, .22])
 
 % adjust panel spacing
-for sx=1:numel(posa)
-    posb = posa{sx};
-    posb = [posb(1) , 0.05+posb(2)*.9, posb(3:4)];
+for sx = 1:numel(posa)/2
+    posb = get(ax(sx),'position');
+    posb = [posb(1)*.9, .08+posb(2)*.9, posb(3:4)];
+    set(ax(sx),'position',posb)
+end
+for sx = numel(posa)/2+1:numel(posa)
+    posb = get(ax(sx),'position');
+    posb = [posb(1)*.9, .05+posb(2)*.9, posb(3:4)];
     set(ax(sx),'position',posb)
 end
 
-
 % Set everything to units pixels (avoids dynamic reposition)
 set(ax,'units','pix')
+
 % adjust figure size
 posf = get(gcf,'position');
-set(gcf,'position',[posf(1:2) posf(3)*1.05 posf(4)])
+set(gcf,'position',[posf(1:3) posf(4)*1.03])
 
 % add X axis label
 title('EEG frequency band (Hz)', 'FontSize', 16, 'FontWeight', 'Bold')
-set(get(gca,'title'), 'Position', [-4.6, -1.2])
+set(get(gca,'title'), 'Position', [-4.2, -1.2])
 
 
 % export

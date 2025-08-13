@@ -1,14 +1,14 @@
-function [t_obs, betas, se, mEEG, X, mod] = lmeEEG_fitMods(dat, tab, mform)
+function [t_obs, betas, se, cnams, mEEG, X] = lmeEEG_fitMods(dat, tab, mform)
 
 % Extract number of cols required for design matrix X
 y = squeeze(dat(1,1,:));
 df = [table(y), tab];
 mod = fitlme(df, mform);
-ncols = length(mod.CoefficientNames);
+cnams = mod.CoefficientNames;
 
 % Conduct mixed models on each channel/timepoint combination.     
 mEEG = nan(size(dat)); 
-X = nan(size(dat,3), ncols, size(dat,1));
+X = nan(size(dat,3), length(cnams), size(dat,1));
 for ch = 1:size(dat,1) % channel
     fprintf('Fitting mixed models [%g/%g]...\n', ch, size(dat,1))
     parfor sp = 1:size(dat,2) % sample point (time or freq)
