@@ -1,0 +1,512 @@
+---
+title: "Corcoran et al. (2025): Supplementary Information"
+output: pdf_document
+---
+
+```{r setup, include=F}
+knitr::opts_chunk$set(echo = F)
+
+library(flextable)
+set_flextable_defaults(fonts_ignore = T)
+
+source("WIM_HB_IBI_Pup_behav.R", local=knitr::knit_global())
+```
+
+This document contains summary tables for all generalised additive mixed-effects models reported in the Results section of Corcoran, Le Coz, Hohwy, & Andrillon (2025), 'When your heart isn't in it anymore: Cardiac correlates of task disengagement'.
+The original model formula is reproduced above each corresponding table to facilitate cross-referencing with the underlying [analysis code](https://github.com/corcorana/WIM_HB/blob/main/analysis/WIM_HB_IBI_Pup_behav.R).
+Some terms included within the tables have been mildly edited to enhance readability.
+
+Tables rendered in `R Markdown` using the `knitr` and `flextable` packages.
+
+# Prevalence of disengaged states and impact on behavioural performance
+
+## Time-on-task: Melbourne
+```{r}
+tot.ms.m$formula[[1]]
+ft <- as_flextable(tot.ms.m) %>%
+  set_header_labels(Estimate = "beta", Std.Error = "s.e.", t.value = "z-stat") %>%
+  mk_par( part = "body", j = "Term", i = 1, value = as_paragraph("(Intercept):MW") ) %>% 
+  mk_par( part = "body", j = "Term", i = 2, value = as_paragraph("stim_type.Face:MW") ) %>%
+  mk_par( part = "body", j = "Term", i = 3, value = as_paragraph("probe_num:MW") ) %>%
+  mk_par( part = "body", j = "Term", i = 4, value = as_paragraph("(Intercept):MB") ) %>% 
+  mk_par( part = "body", j = "Term", i = 5, value = as_paragraph("stim_type.Face:MB") ) %>%
+  mk_par( part = "body", j = "Term", i = 6, value = as_paragraph("probe_num:MB") ) %>%
+  mk_par( part = "body", j = "Term", i = 8, value = as_paragraph("s(subj_id):MW") ) %>%
+  mk_par( part = "body", j = "Term", i = 9, value = as_paragraph("s(subj_id):MB") ) %>%
+  mk_par( part = "body", j = "t.value", i = 7, value = as_paragraph("Chi-sq") ) %>%
+  colformat_double(j = c("Estimate", "Std.Error", "t.value"), i = c(8,9), digits = 2) %>%
+  width(j = c("Component", "Term", "Estimate", "Std.Error", "t.value", "p.value", "signif"), 
+        width = c(1.2, 1.6, .7, .7, .7, .7, .4) )
+
+ft
+```
+
+## Time-on-task: Paris
+```{r}
+tot.ms.p$formula[[1]]
+ft <- as_flextable(tot.ms.p) %>%
+  set_header_labels(Estimate = "beta", Std.Error = "s.e.", t.value = "z-stat") %>%
+  mk_par( part = "body", j = "Term", i = 1, value = as_paragraph("(Intercept):MW") ) %>% 
+  mk_par( part = "body", j = "Term", i = 2, value = as_paragraph("stim_type.Face:MW") ) %>%
+  mk_par( part = "body", j = "Term", i = 3, value = as_paragraph("probe_num:MW") ) %>%
+  mk_par( part = "body", j = "Term", i = 4, value = as_paragraph("(Intercept):MB") ) %>% 
+  mk_par( part = "body", j = "Term", i = 5, value = as_paragraph("stim_type.Face:MB") ) %>%
+  mk_par( part = "body", j = "Term", i = 6, value = as_paragraph("probe_num:MB") ) %>%
+  mk_par( part = "body", j = "Term", i = 8, value = as_paragraph("s(subj_id):MW") ) %>%
+  mk_par( part = "body", j = "Term", i = 9, value = as_paragraph("s(subj_id):MB") ) %>%
+  mk_par( part = "body", j = "t.value", i = 7, value = as_paragraph("Chi-sq") ) %>%
+  colformat_double(j = c("Estimate", "Std.Error", "t.value"), i = c(8,9), digits = 2) %>%
+  width(j = c("Component", "Term", "Estimate", "Std.Error", "t.value", "p.value", "signif"), 
+        width = c(1.2, 1.6, .7, .7, .7, .7, .4) )
+
+ft
+```
+
+## Vigilance: Melbourne
+```{r}
+vig.ms.m$formula[[1]]
+ft <- as_flextable(vig.ms.m) %>%
+  set_header_labels(Estimate = "beta", Std.Error = "s.e.", t.value = "z-stat") %>%
+  mk_par( part = "body", j = "Term", i = 1, value = as_paragraph("(Intercept):MW") ) %>% 
+  mk_par( part = "body", j = "Term", i = 2, value = as_paragraph("stim_type.Face:MW") ) %>%
+  mk_par( part = "body", j = "Term", i = 3, value = as_paragraph("vigil:MW") ) %>%
+  mk_par( part = "body", j = "Term", i = 4, value = as_paragraph("(Intercept):MB") ) %>% 
+  mk_par( part = "body", j = "Term", i = 5, value = as_paragraph("stim_type.Face:MB") ) %>%
+  mk_par( part = "body", j = "Term", i = 6, value = as_paragraph("vigil:MB") ) %>%
+  mk_par( part = "body", j = "Term", i = 8, value = as_paragraph("s(subj_id):MW") ) %>%
+  mk_par( part = "body", j = "Term", i = 9, value = as_paragraph("s(subj_id):MB") ) %>%
+  mk_par( part = "body", j = "t.value", i = 7, value = as_paragraph("Chi-sq") ) %>%
+  colformat_double(j = c("Estimate", "Std.Error", "t.value"), i = c(8,9), digits = 2) %>%
+  width(j = c("Component", "Term", "Estimate", "Std.Error", "t.value", "p.value", "signif"), 
+        width = c(1.2, 1.6, .7, .7, .7, .7, .4) )
+
+ft
+```
+
+## Vigilance: Paris
+```{r}
+vig.ms.p$formula[[1]]
+ft <- as_flextable(vig.ms.p) %>%
+  set_header_labels(Estimate = "beta", Std.Error = "s.e.", t.value = "z-stat") %>%
+  mk_par( part = "body", j = "Term", i = 1, value = as_paragraph("(Intercept):MW") ) %>% 
+  mk_par( part = "body", j = "Term", i = 2, value = as_paragraph("stim_type.Face:MW") ) %>%
+  mk_par( part = "body", j = "Term", i = 3, value = as_paragraph("vigil:MW") ) %>%
+  mk_par( part = "body", j = "Term", i = 4, value = as_paragraph("(Intercept):MB") ) %>% 
+  mk_par( part = "body", j = "Term", i = 5, value = as_paragraph("stim_type.Face:MB") ) %>%
+  mk_par( part = "body", j = "Term", i = 6, value = as_paragraph("vigil:MB") ) %>%
+  mk_par( part = "body", j = "Term", i = 8, value = as_paragraph("s(subj_id):MW") ) %>%
+  mk_par( part = "body", j = "Term", i = 9, value = as_paragraph("s(subj_id):MB") ) %>%
+  mk_par( part = "body", j = "t.value", i = 7, value = as_paragraph("Chi-sq") ) %>%
+  colformat_double(j = c("Estimate", "Std.Error", "t.value"), i = c(8,9), digits = 2) %>%
+  width(j = c("Component", "Term", "Estimate", "Std.Error", "t.value", "p.value", "signif"), 
+        width = c(1.2, 1.6, .7, .7, .7, .7, .4) )
+
+ft
+```
+
+
+## Pupil-size: Melbourne
+```{r}
+pup.ms.m$formula[[1]]
+ft <- as_flextable(pup.ms.m) %>%
+  set_header_labels(Estimate = "beta", Std.Error = "s.e.", t.value = "z-stat") %>%
+  mk_par( part = "body", j = "Term", i = 1, value = as_paragraph("(Intercept):MW") ) %>% 
+  mk_par( part = "body", j = "Term", i = 2, value = as_paragraph("stim_type.Face:MW") ) %>%
+  mk_par( part = "body", j = "Term", i = 3, value = as_paragraph("zuPup:MW") ) %>%
+  mk_par( part = "body", j = "Term", i = 4, value = as_paragraph("(Intercept):MB") ) %>% 
+  mk_par( part = "body", j = "Term", i = 5, value = as_paragraph("stim_type.Face:MB") ) %>%
+  mk_par( part = "body", j = "Term", i = 6, value = as_paragraph("zuPup:MB") ) %>%
+  mk_par( part = "body", j = "Term", i = 8, value = as_paragraph("s(subj_id):MW") ) %>%
+  mk_par( part = "body", j = "Term", i = 9, value = as_paragraph("s(subj_id):MB") ) %>%
+  mk_par( part = "body", j = "t.value", i = 7, value = as_paragraph("Chi-sq") ) %>%
+  colformat_double(j = c("Estimate", "Std.Error", "t.value"), i = c(8,9), digits = 2) %>%
+  width(j = c("Component", "Term", "Estimate", "Std.Error", "t.value", "p.value", "signif"), 
+        width = c(1.2, 1.6, .7, .7, .7, .7, .4) )
+
+ft
+```
+
+## Pupil-size: Paris
+```{r}
+pup.ms.p$formula[[1]]
+ft <- as_flextable(pup.ms.p) %>%
+  set_header_labels(Estimate = "beta", Std.Error = "s.e.", t.value = "z-stat") %>%
+  mk_par( part = "body", j = "Term", i = 1, value = as_paragraph("(Intercept):MW") ) %>% 
+  mk_par( part = "body", j = "Term", i = 2, value = as_paragraph("stim_type.Face:MW") ) %>%
+  mk_par( part = "body", j = "Term", i = 3, value = as_paragraph("zuPup:MW") ) %>%
+  mk_par( part = "body", j = "Term", i = 4, value = as_paragraph("(Intercept):MB") ) %>% 
+  mk_par( part = "body", j = "Term", i = 5, value = as_paragraph("stim_type.Face:MB") ) %>%
+  mk_par( part = "body", j = "Term", i = 6, value = as_paragraph("zuPup:MB") ) %>%
+  mk_par( part = "body", j = "Term", i = 8, value = as_paragraph("s(subj_id):MW") ) %>%
+  mk_par( part = "body", j = "Term", i = 9, value = as_paragraph("s(subj_id):MB") ) %>%
+  mk_par( part = "body", j = "t.value", i = 7, value = as_paragraph("Chi-sq") ) %>%
+  colformat_double(j = c("Estimate", "Std.Error", "t.value"), i = c(8,9), digits = 2) %>%
+  width(j = c("Component", "Term", "Estimate", "Std.Error", "t.value", "p.value", "signif"), 
+        width = c(1.2, 1.6, .7, .7, .7, .7, .4) )
+
+ft
+```
+
+
+## Sensitivity: Melbourne
+```{r}
+ms.dp.m$formula
+ft <- as_flextable(ms.dp.m) %>%
+  set_header_labels(Estimate = "beta", Std.Error = "s.e.", t.value = "t-stat") %>%
+  mk_par( part = "body", j = "Term", i = 1, value = as_paragraph("(Intercept)") ) %>% 
+  mk_par( part = "body", j = "Term", i = 2, value = as_paragraph("stim_type.Face") ) %>%
+  mk_par( part = "body", j = "Term", i = 3, value = as_paragraph("state.MW") ) %>%
+  mk_par( part = "body", j = "Term", i = 4, value = as_paragraph("state.ON") ) %>%
+  mk_par( part = "body", j = "t.value", i = 5, value = as_paragraph("F-stat") ) %>%
+  colformat_double(j = c("Estimate", "Std.Error", "t.value"), i = 6, digits = 2) %>%
+  width(j = c("Component", "Term", "Estimate", "Std.Error", "t.value", "p.value", "signif"), 
+        width = c(1.2, 1.6, .7, .7, .7, .7, .4) )
+
+ft
+```
+
+## Sensitivity: Paris
+```{r}
+ms.dp.p$formula
+ft <- as_flextable(ms.dp.p) %>%
+  set_header_labels(Estimate = "beta", Std.Error = "s.e.", t.value = "t-stat") %>%
+  mk_par( part = "body", j = "Term", i = 1, value = as_paragraph("(Intercept)") ) %>% 
+  mk_par( part = "body", j = "Term", i = 2, value = as_paragraph("stim_type.Face") ) %>%
+  mk_par( part = "body", j = "Term", i = 3, value = as_paragraph("state.MW") ) %>%
+  mk_par( part = "body", j = "Term", i = 4, value = as_paragraph("state.ON") ) %>%
+  mk_par( part = "body", j = "t.value", i = 5, value = as_paragraph("F-stat") ) %>%
+  colformat_double(j = c("Estimate", "Std.Error", "t.value"), i = 6, digits = 2) %>%
+  width(j = c("Component", "Term", "Estimate", "Std.Error", "t.value", "p.value", "signif"), 
+        width = c(1.2, 1.6, .7, .7, .7, .7, .4) )
+
+ft
+```
+
+
+## Response bias: Melbourne
+```{r}
+ms.cn.m$formula
+ft <- as_flextable(ms.cn.m) %>%
+  set_header_labels(Estimate = "beta", Std.Error = "s.e.", t.value = "t-stat") %>%
+  mk_par( part = "body", j = "Term", i = 1, value = as_paragraph("(Intercept)") ) %>% 
+  mk_par( part = "body", j = "Term", i = 2, value = as_paragraph("stim_type.Face") ) %>%
+  mk_par( part = "body", j = "Term", i = 3, value = as_paragraph("state.MW") ) %>%
+  mk_par( part = "body", j = "Term", i = 4, value = as_paragraph("state.ON") ) %>%
+  mk_par( part = "body", j = "t.value", i = 5, value = as_paragraph("F-stat") ) %>%
+  colformat_double(j = c("Estimate", "Std.Error", "t.value"), i = 6, digits = 2) %>%
+  width(j = c("Component", "Term", "Estimate", "Std.Error", "t.value", "p.value", "signif"), 
+        width = c(1.2, 1.6, .7, .7, .7, .7, .4) )
+
+ft
+```
+
+## Response bias: Paris
+```{r}
+ms.cn.p$formula
+ft <- as_flextable(ms.cn.p) %>%
+  set_header_labels(Estimate = "beta", Std.Error = "s.e.", t.value = "t-stat") %>%
+  mk_par( part = "body", j = "Term", i = 1, value = as_paragraph("(Intercept)") ) %>% 
+  mk_par( part = "body", j = "Term", i = 2, value = as_paragraph("stim_type.Face") ) %>%
+  mk_par( part = "body", j = "Term", i = 3, value = as_paragraph("state.MW") ) %>%
+  mk_par( part = "body", j = "Term", i = 4, value = as_paragraph("state.ON") ) %>%
+  mk_par( part = "body", j = "t.value", i = 5, value = as_paragraph("F-stat") ) %>%
+  colformat_double(j = c("Estimate", "Std.Error", "t.value"), i = 6, digits = 2) %>%
+  width(j = c("Component", "Term", "Estimate", "Std.Error", "t.value", "p.value", "signif"), 
+        width = c(1.2, 1.6, .7, .7, .7, .7, .4) )
+
+ft
+```
+
+
+## Response speed: Melbourne
+```{r}
+ms.rs.m$formula
+ft <- as_flextable(ms.rs.m) %>%
+  set_header_labels(Estimate = "beta", Std.Error = "s.e.", t.value = "t-stat") %>%
+  mk_par( part = "body", j = "Term", i = 1, value = as_paragraph("(Intercept)") ) %>% 
+  mk_par( part = "body", j = "Term", i = 2, value = as_paragraph("stim_type.Face") ) %>%
+  mk_par( part = "body", j = "Term", i = 3, value = as_paragraph("state.MW") ) %>%
+  mk_par( part = "body", j = "Term", i = 4, value = as_paragraph("state.ON") ) %>%
+  mk_par( part = "body", j = "t.value", i = 5, value = as_paragraph("F-stat") ) %>%
+  colformat_double(j = c("Estimate", "Std.Error", "t.value"), i = 6, digits = 2) %>%
+  width(j = c("Component", "Term", "Estimate", "Std.Error", "t.value", "p.value", "signif"), 
+        width = c(1.2, 1.6, .7, .7, .7, .7, .4) )
+
+ft
+```
+
+## Response speed: Paris
+```{r}
+ms.rs.p$formula
+ft <- as_flextable(ms.rs.p) %>%
+  set_header_labels(Estimate = "beta", Std.Error = "s.e.", t.value = "t-stat") %>%
+  mk_par( part = "body", j = "Term", i = 1, value = as_paragraph("(Intercept)") ) %>% 
+  mk_par( part = "body", j = "Term", i = 2, value = as_paragraph("stim_type.Face") ) %>%
+  mk_par( part = "body", j = "Term", i = 3, value = as_paragraph("state.MW") ) %>%
+  mk_par( part = "body", j = "Term", i = 4, value = as_paragraph("state.ON") ) %>%
+  mk_par( part = "body", j = "t.value", i = 5, value = as_paragraph("F-stat") ) %>%
+  colformat_double(j = c("Estimate", "Std.Error", "t.value"), i = 6, digits = 2) %>%
+  width(j = c("Component", "Term", "Estimate", "Std.Error", "t.value", "p.value", "signif"), 
+        width = c(1.2, 1.6, .7, .7, .7, .7, .4) )
+
+ft
+```
+
+
+## Response speed variability: Melbourne
+```{r}
+ms.rv.m$formula
+ft <- as_flextable(ms.rv.m) %>%
+  set_header_labels(Estimate = "beta", Std.Error = "s.e.", t.value = "t-stat") %>%
+  mk_par( part = "body", j = "Term", i = 1, value = as_paragraph("(Intercept)") ) %>% 
+  mk_par( part = "body", j = "Term", i = 2, value = as_paragraph("stim_type.Face") ) %>%
+  mk_par( part = "body", j = "Term", i = 3, value = as_paragraph("state.MW") ) %>%
+  mk_par( part = "body", j = "Term", i = 4, value = as_paragraph("state.ON") ) %>%
+  mk_par( part = "body", j = "t.value", i = 5, value = as_paragraph("F-stat") ) %>%
+  colformat_double(j = c("Estimate", "Std.Error", "t.value"), i = 6, digits = 2) %>%
+  width(j = c("Component", "Term", "Estimate", "Std.Error", "t.value", "p.value", "signif"), 
+        width = c(1.2, 1.6, .7, .7, .7, .7, .4) )
+
+ft
+```
+
+## Response speed variability: Paris
+```{r}
+ms.rv.p$formula
+ft <- as_flextable(ms.rv.p) %>%
+  set_header_labels(Estimate = "beta", Std.Error = "s.e.", t.value = "t-stat") %>%
+  mk_par( part = "body", j = "Term", i = 1, value = as_paragraph("(Intercept)") ) %>% 
+  mk_par( part = "body", j = "Term", i = 2, value = as_paragraph("stim_type.Face") ) %>%
+  mk_par( part = "body", j = "Term", i = 3, value = as_paragraph("state.MW") ) %>%
+  mk_par( part = "body", j = "Term", i = 4, value = as_paragraph("state.ON") ) %>%
+  mk_par( part = "body", j = "t.value", i = 5, value = as_paragraph("F-stat") ) %>%
+  colformat_double(j = c("Estimate", "Std.Error", "t.value"), i = 6, digits = 2) %>%
+  width(j = c("Component", "Term", "Estimate", "Std.Error", "t.value", "p.value", "signif"), 
+        width = c(1.2, 1.6, .7, .7, .7, .7, .4) )
+
+ft
+```
+
+# Cardiac measures afford complementary information about arousal, attentional, and behavioural states
+
+## Attentional state
+```{r}
+ibi.ms$formula[[1]]
+ibi.ms$formula[[2]]
+ft <- as_flextable(ibi.ms) %>%
+  set_header_labels(Estimate = "beta", Std.Error = "s.e.", t.value = "z-stat") %>%
+  mk_par( part = "body", j = "Term", i = 1, value = as_paragraph("(Intercept):MW") ) %>% 
+  mk_par( part = "body", j = "Term", i = 2, value = as_paragraph("site.Paris:MW") ) %>% 
+  mk_par( part = "body", j = "Term", i = 3, value = as_paragraph("stim_type.Face:MW") ) %>%
+  mk_par( part = "body", j = "Term", i = 4, value = as_paragraph("ln.cvIBI:MW") ) %>%
+  mk_par( part = "body", j = "Term", i = 5, value = as_paragraph("zuIBI:MW") ) %>%
+  mk_par( part = "body", j = "Term", i = 6, value = as_paragraph("(Intercept):MB") ) %>% 
+  mk_par( part = "body", j = "Term", i = 7, value = as_paragraph("site.Paris:MB") ) %>%
+  mk_par( part = "body", j = "Term", i = 8, value = as_paragraph("stim_type.Face:MB") ) %>%
+  mk_par( part = "body", j = "Term", i = 9, value = as_paragraph("ln.cvIBI:MB") ) %>%
+  mk_par( part = "body", j = "Term", i = 10, value = as_paragraph("zuIBI:MB") ) %>%
+  mk_par( part = "body", j = "Term", i = 12, value = as_paragraph("s(subj_id,probe_num):MW") ) %>%
+  mk_par( part = "body", j = "Term", i = 13, value = as_paragraph("s(subj_id,probe_num):MB") ) %>%
+  mk_par( part = "body", j = "t.value", i = 11, value = as_paragraph("Chi-sq") ) %>%
+  colformat_double(j = c("Estimate", "Std.Error", "t.value"), i = c(12,13), digits = 2) %>%
+  width(j = c("Component", "Term", "Estimate", "Std.Error", "t.value", "p.value", "signif"), 
+        width = c(1.2, 1.6, .7, .7, .7, .7, .4) )
+
+ft
+```
+
+## Vigilance
+```{r}
+ibi.vo$formula
+ft <- as_flextable(ibi.vo) %>%
+  set_header_labels(Estimate = "beta", Std.Error = "s.e.", t.value = "t-stat") %>%
+  mk_par( part = "body", j = "Term", i = 1, value = as_paragraph("(Intercept)") ) %>% 
+  mk_par( part = "body", j = "Term", i = 2, value = as_paragraph("site.Paris") ) %>%
+  mk_par( part = "body", j = "Term", i = 3, value = as_paragraph("stim_type.Face") ) %>%
+  mk_par( part = "body", j = "t.value", i = 6, value = as_paragraph("F-stat") ) %>%
+  colformat_double(j = c("Estimate", "Std.Error", "t.value"), i = 7, digits = 2) %>%
+  width(j = c("Component", "Term", "Estimate", "Std.Error", "t.value", "p.value", "signif"), 
+        width = c(1.2, 1.6, .7, .7, .7, .7, .4) )
+
+ft
+```
+
+## Pupil-size
+```{r}
+ibi.pz$formula
+ft <- as_flextable(ibi.pz) %>%
+  set_header_labels(Estimate = "beta", Std.Error = "s.e.", t.value = "t-stat") %>%
+  mk_par( part = "body", j = "Term", i = 1, value = as_paragraph("(Intercept)") ) %>% 
+  mk_par( part = "body", j = "Term", i = 2, value = as_paragraph("site.Paris") ) %>%
+  mk_par( part = "body", j = "Term", i = 3, value = as_paragraph("stim_type.Face") ) %>%
+  mk_par( part = "body", j = "t.value", i = 6, value = as_paragraph("F-stat") ) %>%
+  colformat_double(j = c("Estimate", "Std.Error", "t.value"), i = 7, digits = 2) %>%
+  width(j = c("Component", "Term", "Estimate", "Std.Error", "t.value", "p.value", "signif"), 
+        width = c(1.2, 1.6, .7, .7, .7, .7, .4) )
+
+ft
+```
+
+
+## Sensitivity
+```{r}
+ibi.dp$formula
+ft <- as_flextable(ibi.dp) %>%
+  set_header_labels(Estimate = "beta", Std.Error = "s.e.", t.value = "t-stat") %>%
+  mk_par( part = "body", j = "Term", i = 1, value = as_paragraph("(Intercept)") ) %>% 
+  mk_par( part = "body", j = "Term", i = 2, value = as_paragraph("site.Paris") ) %>%
+  mk_par( part = "body", j = "Term", i = 3, value = as_paragraph("stim_type.Face") ) %>%
+  mk_par( part = "body", j = "t.value", i = 6, value = as_paragraph("F-stat") ) %>%
+  colformat_double(j = c("Estimate", "Std.Error", "t.value"), i = 7, digits = 2) %>%
+  width(j = c("Component", "Term", "Estimate", "Std.Error", "t.value", "p.value", "signif"), 
+        width = c(1.2, 1.6, .7, .7, .7, .7, .4) )
+
+ft
+```
+
+## Response-bias
+```{r}
+ibi.cn$formula
+ft <- as_flextable(ibi.cn) %>%
+  set_header_labels(Estimate = "beta", Std.Error = "s.e.", t.value = "t-stat") %>%
+  mk_par( part = "body", j = "Term", i = 1, value = as_paragraph("(Intercept)") ) %>% 
+  mk_par( part = "body", j = "Term", i = 2, value = as_paragraph("site.Paris") ) %>%
+  mk_par( part = "body", j = "Term", i = 3, value = as_paragraph("stim_type.Face") ) %>%
+  mk_par( part = "body", j = "t.value", i = 6, value = as_paragraph("F-stat") ) %>%
+  colformat_double(j = c("Estimate", "Std.Error", "t.value"), i = 7, digits = 2) %>%
+  width(j = c("Component", "Term", "Estimate", "Std.Error", "t.value", "p.value", "signif"), 
+        width = c(1.2, 1.6, .7, .7, .7, .7, .4) )
+
+ft
+```
+
+
+## Hit rate
+```{r}
+ibi.hr$formula
+ft <- as_flextable(ibi.hr) %>%
+  set_header_labels(Estimate = "beta", Std.Error = "s.e.", t.value = "t-stat") %>%
+  mk_par( part = "body", j = "Term", i = 1, value = as_paragraph("(Intercept)") ) %>% 
+  mk_par( part = "body", j = "Term", i = 2, value = as_paragraph("site.Paris") ) %>%
+  mk_par( part = "body", j = "Term", i = 3, value = as_paragraph("stim_type.Face") ) %>%
+  mk_par( part = "body", j = "t.value", i = 6, value = as_paragraph("F-stat") ) %>%
+  colformat_double(j = c("Estimate", "Std.Error", "t.value"), i = 7, digits = 2) %>%
+  width(j = c("Component", "Term", "Estimate", "Std.Error", "t.value", "p.value", "signif"), 
+        width = c(1.2, 1.6, .7, .7, .7, .7, .4) )
+
+ft
+```
+
+
+## False alarm rate
+```{r}
+ibi.fa$formula
+ft <- as_flextable(ibi.fa) %>%
+  set_header_labels(Estimate = "beta", Std.Error = "s.e.", t.value = "t-stat") %>%
+  mk_par( part = "body", j = "Term", i = 1, value = as_paragraph("(Intercept)") ) %>% 
+  mk_par( part = "body", j = "Term", i = 2, value = as_paragraph("site.Paris") ) %>%
+  mk_par( part = "body", j = "Term", i = 3, value = as_paragraph("stim_type.Face") ) %>%
+  mk_par( part = "body", j = "t.value", i = 6, value = as_paragraph("F-stat") ) %>%
+  colformat_double(j = c("Estimate", "Std.Error", "t.value"), i = 7, digits = 2) %>%
+  width(j = c("Component", "Term", "Estimate", "Std.Error", "t.value", "p.value", "signif"), 
+        width = c(1.2, 1.6, .7, .7, .7, .7, .4) )
+
+ft
+```
+
+
+## Response speed
+```{r}
+ibi.rs$formula
+ft <- as_flextable(ibi.rs) %>%
+  set_header_labels(Estimate = "beta", Std.Error = "s.e.", t.value = "t-stat") %>%
+  mk_par( part = "body", j = "Term", i = 1, value = as_paragraph("(Intercept)") ) %>% 
+  mk_par( part = "body", j = "Term", i = 2, value = as_paragraph("site.Paris") ) %>%
+  mk_par( part = "body", j = "Term", i = 3, value = as_paragraph("stim_type.Face") ) %>%
+  mk_par( part = "body", j = "t.value", i = 6, value = as_paragraph("F-stat") ) %>%
+  colformat_double(j = c("Estimate", "Std.Error", "t.value"), i = 7, digits = 2) %>%
+  width(j = c("Component", "Term", "Estimate", "Std.Error", "t.value", "p.value", "signif"), 
+        width = c(1.2, 1.6, .7, .7, .7, .7, .4) ) 
+
+ft
+```
+
+
+## Response speed variability
+```{r}
+ibi.rv$formula
+ft <- as_flextable(ibi.rv) %>%
+  set_header_labels(Estimate = "beta", Std.Error = "s.e.", t.value = "t-stat") %>%
+  mk_par( part = "body", j = "Term", i = 1, value = as_paragraph("(Intercept)") ) %>% 
+  mk_par( part = "body", j = "Term", i = 2, value = as_paragraph("site.Paris") ) %>%
+  mk_par( part = "body", j = "Term", i = 3, value = as_paragraph("stim_type.Face") ) %>%
+  mk_par( part = "body", j = "t.value", i = 6, value = as_paragraph("F-stat") ) %>%
+  colformat_double(j = c("Estimate", "Std.Error", "t.value"), i = 7, digits = 2) %>%
+  width(j = c("Component", "Term", "Estimate", "Std.Error", "t.value", "p.value", "signif"), 
+        width = c(1.2, 1.6, .7, .7, .7, .7, .4) )
+
+ft
+```
+
+
+# Error-related cardiac deceleration does not account for differences across attentional states
+
+```{r}
+nogo$formula
+
+anova.gam(nogo)
+
+ft <- as_flextable(nogo) %>%
+  set_header_labels(Estimate = "beta", Std.Error = "s.e.", t.value = "t-stat") %>%
+  mk_par( part = "body", j = "Term", i = 1, value = as_paragraph("(Intercept)") ) %>% 
+  mk_par( part = "body", j = "Term", i = 2, value = as_paragraph("site.Paris") ) %>%
+  mk_par( part = "body", j = "Term", i = 3, value = as_paragraph("stim_type.Face") ) %>%
+  mk_par( part = "body", j = "Term", i = 4, value = as_paragraph("idx.IBI-2--IBI-3") ) %>%
+  mk_par( part = "body", j = "Term", i = 5, value = as_paragraph("idx.IBI-1--IBI-2") ) %>%
+  mk_par( part = "body", j = "Term", i = 6, value = as_paragraph("idx.IBI_0--IBI-1") ) %>%
+  mk_par( part = "body", j = "Term", i = 7, value = as_paragraph("idx.IBI+1--IBI_0") ) %>%
+  mk_par( part = "body", j = "Term", i = 8, value = as_paragraph("idx.IBI+2--IBI+1") ) %>%
+  mk_par( part = "body", j = "Term", i = 9, value = as_paragraph("idx.IBI+3--IBI+2") ) %>%
+  mk_par( part = "body", j = "Term", i = 10, value = as_paragraph("resp_type.FA") ) %>%
+  mk_par( part = "body", j = "Term", i = 11, value = as_paragraph("state.MW") ) %>%
+  mk_par( part = "body", j = "Term", i = 12, value = as_paragraph("state.ON") ) %>%
+  mk_par( part = "body", j = "Term", i = 13, value = as_paragraph("idx.IBI-2--IBI-3:resp_type.FA") ) %>%
+  mk_par( part = "body", j = "Term", i = 14, value = as_paragraph("idx.IBI-1--IBI-2:resp_type.FA") ) %>%
+  mk_par( part = "body", j = "Term", i = 15, value = as_paragraph("idx.IBI_0--IBI-1:resp_type.FA") ) %>%
+  mk_par( part = "body", j = "Term", i = 16, value = as_paragraph("idx.IBI+1--IBI_0:resp_type.FA") ) %>%
+  mk_par( part = "body", j = "Term", i = 17, value = as_paragraph("idx.IBI+2--IBI+1:resp_type.FA") ) %>%
+  mk_par( part = "body", j = "Term", i = 18, value = as_paragraph("idx.IBI+3--IBI+2:resp_type.FA") ) %>%
+  mk_par( part = "body", j = "Term", i = 19, value = as_paragraph("idx.IBI-2--IBI-3:state.MW") ) %>%
+  mk_par( part = "body", j = "Term", i = 20, value = as_paragraph("idx.IBI-1--IBI-2:state.MW") ) %>%
+  mk_par( part = "body", j = "Term", i = 21, value = as_paragraph("idx.IBI_0--IBI-1:state.MW") ) %>%
+  mk_par( part = "body", j = "Term", i = 22, value = as_paragraph("idx.IBI+1--IBI_0:state.MW") ) %>%
+  mk_par( part = "body", j = "Term", i = 23, value = as_paragraph("idx.IBI+2--IBI+1:state.MW") ) %>%
+  mk_par( part = "body", j = "Term", i = 24, value = as_paragraph("idx.IBI+3--IBI+2:state.MW") ) %>%
+  mk_par( part = "body", j = "Term", i = 25, value = as_paragraph("idx.IBI-2--IBI-3:state.ON") ) %>%
+  mk_par( part = "body", j = "Term", i = 26, value = as_paragraph("idx.IBI-1--IBI-2:state.ON") ) %>%
+  mk_par( part = "body", j = "Term", i = 27, value = as_paragraph("idx.IBI_0--IBI-1:state.ON") ) %>%
+  mk_par( part = "body", j = "Term", i = 28, value = as_paragraph("idx.IBI+1--IBI_0:state.ON") ) %>%
+  mk_par( part = "body", j = "Term", i = 29, value = as_paragraph("idx.IBI+2--IBI+1:state.ON") ) %>%
+  mk_par( part = "body", j = "Term", i = 30, value = as_paragraph("idx.IBI+3--IBI+2:state.ON") ) %>%
+  mk_par( part = "body", j = "Term", i = 31, value = as_paragraph("resp_type.FA:state.MW") ) %>%
+  mk_par( part = "body", j = "Term", i = 32, value = as_paragraph("resp_type.FA:state.ON") ) %>%
+  mk_par( part = "body", j = "Term", i = 33, value = as_paragraph("idx.IBI-2--IBI-3:resp_type.FA:state.MW") ) %>%
+  mk_par( part = "body", j = "Term", i = 34, value = as_paragraph("idx.IBI-1--IBI-2:resp_type.FA:state.MW") ) %>%
+  mk_par( part = "body", j = "Term", i = 35, value = as_paragraph("idx.IBI_0--IBI-1:resp_type.FA:state.MW") ) %>%
+  mk_par( part = "body", j = "Term", i = 36, value = as_paragraph("idx.IBI+1--IBI_0:resp_type.FA:state.MW") ) %>%
+  mk_par( part = "body", j = "Term", i = 37, value = as_paragraph("idx.IBI+2--IBI+1:resp_type.FA:state.MW") ) %>%
+  mk_par( part = "body", j = "Term", i = 38, value = as_paragraph("idx.IBI+3--IBI+2:resp_type.FA:state.MW") ) %>%
+    mk_par( part = "body", j = "Term", i = 39, value = as_paragraph("idx.IBI-2--IBI-3:resp_type.FA:state.ON") ) %>%
+  mk_par( part = "body", j = "Term", i = 40, value = as_paragraph("idx.IBI-1--IBI-2:resp_type.FA:state.ON") ) %>%
+  mk_par( part = "body", j = "Term", i = 41, value = as_paragraph("idx.IBI_0--IBI-1:resp_type.FA:state.ON") ) %>%
+  mk_par( part = "body", j = "Term", i = 42, value = as_paragraph("idx.IBI+1--IBI_0:resp_type.FA:state.ON") ) %>%
+  mk_par( part = "body", j = "Term", i = 43, value = as_paragraph("idx.IBI+2--IBI+1:resp_type.FA:state.ON") ) %>%
+  mk_par( part = "body", j = "Term", i = 44, value = as_paragraph("idx.IBI+3--IBI+2:resp_type.FA:state.ON") ) %>%
+  mk_par( part = "body", j = "t.value", i = 45, value = as_paragraph("F-stat") ) %>%
+  colformat_double(j = c("Estimate", "Std.Error", "t.value"), i = 46, digits = 2) %>%
+  width(j = c("Component", "Term", "Estimate", "Std.Error", "t.value", "p.value", "signif"), 
+        width = c(1, 1.8, .7, .7, .7, .7, .4) )
+
+ft
+```
+
