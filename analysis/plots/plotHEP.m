@@ -33,7 +33,6 @@ tc1=48:70;
 tc2=87:92;
 
 
-
 %% Topographies
 
 % exclude extraneous channels (avoid topo-skirt)
@@ -151,16 +150,18 @@ xlabel('Time from R-peak (s)')
 legend("", "V4", "", "V3", "", "V2", "", "V1", Location="northeast");
 format_fig
 
+
 %% adjust positioning
 
 % adjust panel spacing
-posa = { [.07, .7, .2, .3]; [.26, .7, .2, .3]; [.52, .7, .2, .3]; [.71, .7, .2, .3];
-        [.08, .40, .37, .26]; [.26, .40, 0, 0]; [.53, .40, .37, .26]; [.73, .40, 0, 0];
-        [.08, .08, .37, .26]; [.26, .08, 0, 0]; [.53, .08, .37, .26]; [.73, .08, 0, 0] };
+posa = { [.07, .71, .2, .3]; [.26, .71, .2, .3]; [.52, .71, .2, .3]; [.71, .71, .2, .3];
+        [.08, .39, .37, .26]; [.26, .39, 0, 0]; [.53, .39, .37, .26]; [.73, .39, 0, 0];
+        [.08, .07, .37, .26]; [.26, .07, 0, 0]; [.53, .07, .37, .26]; [.73, .07, 0, 0] };
 
 for sx=1:numel(posa)
     set(ax(sx),'position',posa{sx})
 end
+
 
 %% labels
 
@@ -173,16 +174,16 @@ posf = get(gcf,'position');
 
 % add annotations
 annotation("textbox", str="A", FontSize = 24, FontWeight = 'bold', LineStyle = 'none', Position = [0 1.01 0 0] );
-annotation("textbox", str= sprintf('[%g, %g] ms', tims(tc1(1))*1000, tims(tc1(end))*1000), FontSize = 20, FontWeight = 'bold', LineStyle = 'none', Position = [.16 .77 .5 0] );
-annotation("textbox", str= sprintf('[%g, %g] ms', tims(tc2(1))*1000, tims(tc2(end))*1000), FontSize = 20, FontWeight = 'bold', LineStyle = 'none', Position = [.61 .77 .5 0] );
-annotation("textbox", str="B", FontSize = 24, FontWeight = 'bold', LineStyle = 'none', Position = [0 .72 0 0] );
-annotation("textbox", str="C", FontSize = 24, FontWeight = 'bold', LineStyle = 'none', Position = [.49 .72 0 0] );
+annotation("textbox", str= sprintf('[%g, %g] ms', tims(tc1(1))*1000, tims(tc1(end))*1000), FontSize = 18, FontWeight = 'bold', LineStyle = 'none', Position = [.175 .77 .5 0] );
+annotation("textbox", str= sprintf('[%g, %g] ms', tims(tc2(1))*1000, tims(tc2(end))*1000), FontSize = 18, FontWeight = 'bold', LineStyle = 'none', Position = [.625 .77 .5 0] );
+annotation("textbox", str="B", FontSize = 24, FontWeight = 'bold', LineStyle = 'none', Position = [0 .71 0 0] );
+annotation("textbox", str="C", FontSize = 24, FontWeight = 'bold', LineStyle = 'none', Position = [.49 .71 0 0] );
 
 
 %% export
 
 try
-    export_fig( 'figure4', '-png' )
+    export_fig( 'figure4', '-png', '-transparent' )
 catch
     hgexport(gcf, 'figure4', hgexport('factorystyle'), 'Format', 'png'); 
 end
