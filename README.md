@@ -38,7 +38,9 @@ Please also cite the accompanying manuscript:
 
 ## Current release
 
-`v1.1.1` [![DOI]()]
+`v1.1.1` 
+
+[![DOI](https://zenodo.org/badge/790713143.svg)](https://doi.org/10.5281/zenodo.17223244)
 
 ## License
 
