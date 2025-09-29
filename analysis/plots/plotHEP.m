@@ -2,6 +2,10 @@
 clear
 close
 
+%% paths
+run(['..' filesep 'localdef_WIM_HB'])
+addpath(genpath(path_eeglab))
+
 %% PLOT RESULTS OF HEP
 load cmaps
 load(['..' filesep 'WIM_HB_HEP_lmeEEG_state.mat'])
@@ -38,37 +42,37 @@ tc2=87:92;
 % exclude extraneous channels (avoid topo-skirt)
 ch = ~matches({chanlocs.labels}, {'FT9', 'FT10', 'ECG'});
 
-figure; set(gcf,'units','centimeters', 'Position', [1 1 24 30])      
+figure; set(gcf,'units','centimeters', 'Position', [1 1 18 24])      
 ax = tight_subplot(3,4,[.01 .01]);
 
 axes(ax(1))
 topoplot(mean(mT1topo(ch,tc1),2), chanlocs(ch), 'style', 'map', 'gridscale', 300, 'colormap', cmap_rdbu, ...
     'maplimits', [-4 4], 'emarker',{'.',[.5 .5 .5],[],1},'emarker2',{find(sum(mT1(ch,tc1)>0,2)),'o','k',4,1} );
     format_fig
-    title(['\color[rgb]{',num2str(msCols(2,:)),'}', 'MW', '\color{black}', ' vs ', '\color[rgb]{',num2str(msCols(1,:)),'}', 'ON' ], 'FontSize', 20, 'FontWeight', 'Bold', 'interpreter', 'tex')
+    title(['\color[rgb]{',num2str(msCols(2,:)),'}', 'MW', '\color{black}', ' - ', '\color[rgb]{',num2str(msCols(1,:)),'}', 'ON' ], 'FontSize', 16, 'FontWeight', 'Bold', 'interpreter', 'tex')
 
 axes(ax(2))
 topoplot(mean(mT2topo(ch,tc1),2), chanlocs(ch), 'style', 'map', 'gridscale', 300, 'colormap', cmap_rdbu, ...
     'maplimits', [-4 4], 'emarker',{'.',[.5 .5 .5],[],1} );
     format_fig
-    title(['\color[rgb]{',num2str(msCols(3,:)),'}', 'MB', '\color{black}', ' vs ', '\color[rgb]{',num2str(msCols(1,:)),'}', 'ON' ], 'FontSize', 20, 'FontWeight', 'Bold', 'interpreter', 'tex')
+    title(['\color[rgb]{',num2str(msCols(3,:)),'}', 'MB', '\color{black}', ' - ', '\color[rgb]{',num2str(msCols(1,:)),'}', 'ON' ], 'FontSize', 16, 'FontWeight', 'Bold', 'interpreter', 'tex')
 
 axes(ax(3))
 topoplot(mean(mT1topo(ch,tc2),2), chanlocs(ch), 'style', 'map', 'gridscale', 300, 'colormap', cmap_rdbu, ...
     'maplimits', [-4 4], 'emarker',{'.',[.5 .5 .5],[],1},'emarker2',{find(sum(mT1(ch,tc2)>0,2)),'o','k',4,1} );
     format_fig
-    title(['\color[rgb]{',num2str(msCols(2,:)),'}', 'MW', '\color{black}', ' vs ', '\color[rgb]{',num2str(msCols(1,:)),'}', 'ON' ], 'FontSize', 20, 'FontWeight', 'Bold', 'interpreter', 'tex')
+    title(['\color[rgb]{',num2str(msCols(2,:)),'}', 'MW', '\color{black}', ' - ', '\color[rgb]{',num2str(msCols(1,:)),'}', 'ON' ], 'FontSize', 16, 'FontWeight', 'Bold', 'interpreter', 'tex')
 
 axes(ax(4))
 topoplot(mean(mT2topo(ch,tc2),2), chanlocs(ch), 'style', 'map', 'gridscale', 300, 'colormap', cmap_rdbu, ...
     'maplimits', [-4 4], 'emarker',{'.',[.5 .5 .5],[],1} );
     format_fig
-    title(['\color[rgb]{',num2str(msCols(3,:)),'}', 'MB', '\color{black}', ' vs ', '\color[rgb]{',num2str(msCols(1,:)),'}', 'ON' ], 'FontSize', 20, 'FontWeight', 'Bold', 'interpreter', 'tex')
+    title(['\color[rgb]{',num2str(msCols(3,:)),'}', 'MB', '\color{black}', ' - ', '\color[rgb]{',num2str(msCols(1,:)),'}', 'ON' ], 'FontSize', 16, 'FontWeight', 'Bold', 'interpreter', 'tex')
 
 
 % add cbar
 h = colorbar('LineWidth', 1.5);
-ylabel(h, 't-value', 'rotation',270, 'VerticalAlignment','bottom', 'FontSize', 18);
+ylabel(h, 't-value', 'rotation',270, 'VerticalAlignment','bottom', 'FontSize', 14);
 
 
 %% ERPs
@@ -89,11 +93,12 @@ plot(tims(tc1), repmat(-1, numel(tc1),1), 'k', 'LineWidth', 2.5)
 plot(tims(tc2), repmat(-1, numel(tc2),1), 'k', 'LineWidth', 2.5)
 xline(0,'--')
 ylim([-1.6, 1.6])
+yticks([-1 0 1])
 xlim([-.3, .9])
 ylabel("HEP (\muV)")
-title('Attentional State')
 %legend("", "", "ON", "", "MW", "", "MB", Location="southeast");
 format_fig
+title('Attentional State', 'FontWeight', 'bold', 'FontSize', 16)
 
 axes(ax(7))
 a = fill([.2, .2, .6, .6], [-2, 2, 2, -2], [1 1 0]);
@@ -106,10 +111,11 @@ simpleTplot(t, Results(2).betas(chm,:,1)+Results(2).betas(chm,:,v2), 0, cmap_rdy
 simpleTplot(t, Results(2).betas(chm,:,1)+Results(2).betas(chm,:,v1), 0, cmap_rdylbu(1,:));
 xline(0,'--')
 ylim([-1.6, 1.6])
+set(gca,'YTickLabel',[]);
 xlim([-.3, .9])
-title('Vigilance Level')
 %legend("", "", "V4", "", "V3", "", "V2", "", "V1", Location="southeast");
 format_fig
+title('Vigilance Level', 'FontWeight', 'bold', 'FontSize', 16)
 
 axes(ax(9))
 a = fill([.2, .2, .6, .6], [-2, 3, 3, -2], [1 1 0]);
@@ -124,6 +130,7 @@ simpleTplot(t, Results(1).betas(ch_ecg,:,1)+Results(1).betas(ch_ecg,:,mb), 0, ms
 jbfill(t,Results(1).betas(ch_ecg,:,1)+Results(1).betas(ch_ecg,:,mb)+Results(1).se(ch_ecg,:,mb),Results(1).betas(ch_ecg,:,1)+Results(1).betas(ch_ecg,:,mb)-Results(1).se(ch_ecg,:,mb),msCols(3,:),msCols(3,:),1,0.5);
 xline(0,'--')
 ylim([-1.2, 2.2])
+yticks([-1 0 1 2])
 xlim([-.3, .9])
 ylabel("ECG (z.u.)")
 xlabel('Time from R-peak (s)')
@@ -145,6 +152,7 @@ simpleTplot(t, Results(2).betas(ch_ecg,:,1)+Results(2).betas(ch_ecg,:,v1), 0, cm
 jbfill(t,Results(2).betas(ch_ecg,:,1)+Results(2).betas(ch_ecg,:,v1)+Results(2).se(ch_ecg,:,v1),Results(2).betas(ch_ecg,:,1)+Results(2).betas(ch_ecg,:,v1)-Results(2).se(ch_ecg,:,v1),cmap_rdylbu(1,:),cmap_rdylbu(1,:),1,0.5);
 xline(0,'--')
 ylim([-1.2, 2.2])
+set(gca,'YTickLabel',[]);
 xlim([-.3, .9])
 xlabel('Time from R-peak (s)')
 legend("", "V4", "", "V3", "", "V2", "", "V1", Location="northeast");
@@ -154,9 +162,9 @@ format_fig
 %% adjust positioning
 
 % adjust panel spacing
-posa = { [.07, .71, .2, .3]; [.26, .71, .2, .3]; [.52, .71, .2, .3]; [.71, .71, .2, .3];
-        [.08, .39, .37, .26]; [.26, .39, 0, 0]; [.53, .39, .37, .26]; [.73, .39, 0, 0];
-        [.08, .07, .37, .26]; [.26, .07, 0, 0]; [.53, .07, .37, .26]; [.73, .07, 0, 0] };
+posa = { [.09, .71, .2, .3]; [.28, .71, .2, .3]; [.52, .71, .2, .3]; [.71, .71, .2, .3];
+        [.1, .39, .37, .26]; [.26, .39, 0, 0]; [.53, .39, .37, .26]; [.73, .39, 0, 0];
+        [.1, .07, .37, .26]; [.26, .07, 0, 0]; [.53, .07, .37, .26]; [.73, .07, 0, 0] };
 
 for sx=1:numel(posa)
     set(ax(sx),'position',posa{sx})
@@ -173,20 +181,13 @@ posf = get(gcf,'position');
 %set(gcf,'position',[posf(1:2) posf(3)*1.05 posf(4)*1.1])
 
 % add annotations
-annotation("textbox", str="A", FontSize = 24, FontWeight = 'bold', LineStyle = 'none', Position = [0 1.01 0 0] );
-annotation("textbox", str= sprintf('[%g, %g] ms', tims(tc1(1))*1000, tims(tc1(end))*1000), FontSize = 18, FontWeight = 'bold', LineStyle = 'none', Position = [.175 .77 .5 0] );
-annotation("textbox", str= sprintf('[%g, %g] ms', tims(tc2(1))*1000, tims(tc2(end))*1000), FontSize = 18, FontWeight = 'bold', LineStyle = 'none', Position = [.625 .77 .5 0] );
-annotation("textbox", str="B", FontSize = 24, FontWeight = 'bold', LineStyle = 'none', Position = [0 .71 0 0] );
-annotation("textbox", str="C", FontSize = 24, FontWeight = 'bold', LineStyle = 'none', Position = [.49 .71 0 0] );
+annotation("textbox", str="A", FontSize = 22, FontWeight = 'bold', LineStyle = 'none', Position = [0 1 0 0] );
+annotation("textbox", str= sprintf('[%g, %g] ms', tims(tc1(1))*1000, tims(tc1(end))*1000), FontSize = 16, FontWeight = 'bold', LineStyle = 'none', Position = [.17 .785 .5 0] );
+annotation("textbox", str= sprintf('[%g, %g] ms', tims(tc2(1))*1000, tims(tc2(end))*1000), FontSize = 16, FontWeight = 'bold', LineStyle = 'none', Position = [.605 .785 .5 0] );
+annotation("textbox", str="B", FontSize = 22, FontWeight = 'bold', LineStyle = 'none', Position = [0 .71 0 0] );
+annotation("textbox", str="C", FontSize = 22, FontWeight = 'bold', LineStyle = 'none', Position = [.48 .71 0 0] );
 
 
 %% export
-
-try
-    export_fig( 'figure4', '-png', '-transparent' )
-catch
-    hgexport(gcf, 'figure4', hgexport('factorystyle'), 'Format', 'png'); 
-end
-
-
-
+print('figure4', '-depsc', '-tiff', '-r600', '-vector')
+print('figure4', '-dtiffn', '-r600', '-vector')

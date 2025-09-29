@@ -277,14 +277,14 @@ scalesy <- lapply(df_labs, function(x) {
 })
 
 subj <- ggplot(filter(df, grp=="s"), aes(y = dv, x = est, xmin = est-(1.96*se), xmax = est+(1.96*se), col = dv ) ) +
-  geom_vline(xintercept = 0, linetype = "dashed", alpha = .5) + 
+  geom_vline(xintercept = 0, linetype = "dashed", colour = "#53565b") + 
   geom_point(size = 2) + geom_errorbarh(height=0) + 
   scale_color_manual(values = c("Mind-wandering" = "#ff801a", "Mind-blanking" = "#7aa6cc", "Vigilance" = "#d11141")) +
   facet_wrap(.~iv, scales = "free") +
   facetted_pos_scales(x = scalesx, y = scalesy) +
-  font_theme + theme(legend.position = "none")
-
-
+  font_theme + 
+  theme(legend.position = "none", 
+        plot.margin = unit(c(.5,3,0,1), 'cm'))
 
 df_scales <- data.frame(
   Panel = c("m", "v"),
@@ -309,26 +309,24 @@ scalesy <- lapply(df_labs, function(x) {
 })
 
 obj <- ggplot(filter(df, grp=="o"), aes(y = dv, x = est, xmin = est-(1.96*se), xmax = est+(1.96*se), col = dv ) ) +
-  geom_vline(xintercept = 0, linetype = "dashed", alpha = .5) + 
+  geom_vline(xintercept = 0, linetype = "dashed", colour = "#53565b") + 
   geom_point(size = 2) + geom_errorbarh(height=0) + 
   scale_color_manual(values = c("Pupil size" = "#8470FF", "Sensitivity (d')" = "#A5D6A7", "Bias (c)" = "#A5D6A7", 
                                 "Hit rate" = "#A5D6A7", "False alarm rate" = "#A5D6A7", "Response speed" = "#ffc425", "Response speed\n variability" = "#ffc425")) +
   facet_wrap(.~iv, scales = "free") +
   facetted_pos_scales(x = scalesx, y = scalesy) +
-  font_theme + theme(strip.text.x = element_blank(), legend.position = "none")
-  
+  font_theme + 
+  theme(strip.text.x = element_blank(), legend.position = "none", 
+        plot.margin = unit(c(.5,3,.5,1), 'cm'))
 
 
-plot_grid(NULL,
-          subj, 
-          obj,
-          labels = c("", "A", "B"), vjust = .7, hjust = -1.5,
-          rel_heights = c(.01, .5, .7), align = "v", axis = "lr",
-          nrow = 3)
+plot_grid(subj, obj,
+          labels = c("A", "B"), 
+          rel_heights = c(.45, .7), align = "v", axis = "lr",
+          nrow = 2)
 
 
-ggsave('figure2_betas.png', height = 12, width = 13, units = "cm", dpi=600, path = 'plots')
-
+ggsave('figure2_betas.tiff', height = 14, width = 18, units = "cm", dpi=600, path = 'plots')
 
 
 ### NoGo IBI analysis
@@ -370,13 +368,11 @@ anova.gam(nogo)
 
 
 # plot IBIs
-
 df <- as.data.frame(ggemmeans(nogo, c("index.o", "resp_type", "state")))
 df$IBI <- recode(df$x, 'IBI-3'='-3', 'IBI-2'='-2', 'IBI-1'='-1', 'IBI 0'='0', 'IBI+1'='+1', 'IBI+2'='+2', 'IBI+3'='+3')
 df$group <- recode(df$group, CR = "Correct rejection", FA = "False alarm")
 df$facet <- recode(df$facet, ON = "On-task", MW = "Mind-wandering", MB = "Mind-blanking" )
 strip <- strip_themed(background_x = elem_list_rect(fill = c("#199933", "#ff801a", "#7aa6cc")))
-
 
 ggplot( df, aes(x=IBI, y=predicted, ymax=predicted+std.error, ymin=predicted-std.error, col=group, shape=group) ) +
   geom_point(size=2, position=position_dodge(width=0.4)) + 
@@ -385,10 +381,32 @@ ggplot( df, aes(x=IBI, y=predicted, ymax=predicted+std.error, ymin=predicted-std
        x = "IBI order (relative to NoGo trial)") +
   scale_colour_brewer(palette = "Set1", direction = -1) +
   ylim(-.2, .6) +
-  facet_wrap2(.~facet, strip=strip) +
+  facet_wrap2(.~factor(facet, levels = c('On-task', 'Mind-wandering', 'Mind-blanking')), strip=strip) +
   font_theme +
   theme(legend.position = c(0.15, 0.85), legend.title=element_blank() )
 
-
 ggsave('figure3_emms.png', height = 7, width = 14, units = "cm", dpi = 600, path = 'plots')
 
+
+# boxplots for Comms Bio
+subj_dat <- msdat %>% drop_na() %>%
+  group_by(subj_id, state, index.o, resp_type) %>% 
+  summarise(muIBI = mean(zuIBI, na.rm=T) ) %>%
+  mutate(IBI = recode(index.o, 'IBI-3'='-3', 'IBI-2'='-2', 'IBI-1'='-1', 'IBI 0'='0', 'IBI+1'='+1', 'IBI+2'='+2', 'IBI+3'='+3'),
+         group = recode(resp_type, CR = "Correct rejection", FA = "False alarm"),
+         facet = recode(state, ON = "On-task", MW = "Mind-wandering", MB = "Mind-blanking" )
+         )
+
+ggplot( subj_dat, aes(x=IBI, y=muIBI, colour=group, shape=group) ) +
+  geom_boxplot(position = position_dodge(width=.5), alpha = .5) + 
+  geom_point(data = subset(subj_dat, muIBI>5)) +
+  geom_hline(yintercept = 0, linetype = "dashed", colour = "#53565b") + 
+  labs(y = "IBI duration (z.u.)", 
+       x = "IBI order (relative to NoGo trial)" ) +
+  scale_colour_brewer(palette = "Set1", direction = -1) +
+  ylim(-1.7, 3.4) +
+  facet_wrap2(.~factor(facet, levels = c('On-task', 'Mind-wandering', 'Mind-blanking')), strip=strip)  +
+  font_theme +
+  theme(legend.position = c(0.105, 0.84), legend.title=element_blank() )
+
+ggsave('figure3_bps.tiff', height = 7, width = 18, units = "cm", dpi = 600, path = 'plots')
