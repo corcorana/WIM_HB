@@ -327,6 +327,7 @@ plot_grid(subj, obj,
 
 
 ggsave('figure2_betas.tiff', height = 14, width = 18, units = "cm", dpi=600, path = 'plots')
+ggsave('figure2_betas.eps', height = 14, width = 18, units = "cm", dpi=600, path = 'plots')
 
 
 ### NoGo IBI analysis
@@ -410,3 +411,4 @@ ggplot( subj_dat, aes(x=IBI, y=muIBI, colour=group, shape=group) ) +
   theme(legend.position = c(0.105, 0.84), legend.title=element_blank() )
 
 ggsave('figure3_bps.tiff', height = 7, width = 18, units = "cm", dpi = 600, path = 'plots')
+ggsave('figure3_bps.eps', height = 7, width = 18, units = "cm", dpi = 600, path = 'plots')

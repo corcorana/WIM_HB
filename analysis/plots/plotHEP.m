@@ -42,32 +42,32 @@ tc2=87:92;
 % exclude extraneous channels (avoid topo-skirt)
 ch = ~matches({chanlocs.labels}, {'FT9', 'FT10', 'ECG'});
 
-figure; set(gcf,'units','centimeters', 'Position', [1 1 18 24])      
+figure; set(gcf,'units','centimeters', 'Position', [1 1 18 20])      
 ax = tight_subplot(3,4,[.01 .01]);
 
 axes(ax(1))
 topoplot(mean(mT1topo(ch,tc1),2), chanlocs(ch), 'style', 'map', 'gridscale', 300, 'colormap', cmap_rdbu, ...
     'maplimits', [-4 4], 'emarker',{'.',[.5 .5 .5],[],1},'emarker2',{find(sum(mT1(ch,tc1)>0,2)),'o','k',4,1} );
     format_fig
-    title(['\color[rgb]{',num2str(msCols(2,:)),'}', 'MW', '\color{black}', ' - ', '\color[rgb]{',num2str(msCols(1,:)),'}', 'ON' ], 'FontSize', 16, 'FontWeight', 'Bold', 'interpreter', 'tex')
+    title(['\color[rgb]{',num2str(msCols(2,:)),'}', 'MW', '\color{black}', '-', '\color[rgb]{',num2str(msCols(1,:)),'}', 'ON' ], 'FontSize', 16, 'FontWeight', 'Bold', 'interpreter', 'tex')
 
 axes(ax(2))
 topoplot(mean(mT2topo(ch,tc1),2), chanlocs(ch), 'style', 'map', 'gridscale', 300, 'colormap', cmap_rdbu, ...
     'maplimits', [-4 4], 'emarker',{'.',[.5 .5 .5],[],1} );
     format_fig
-    title(['\color[rgb]{',num2str(msCols(3,:)),'}', 'MB', '\color{black}', ' - ', '\color[rgb]{',num2str(msCols(1,:)),'}', 'ON' ], 'FontSize', 16, 'FontWeight', 'Bold', 'interpreter', 'tex')
+    title(['\color[rgb]{',num2str(msCols(3,:)),'}', 'MB', '\color{black}', '-', '\color[rgb]{',num2str(msCols(1,:)),'}', 'ON' ], 'FontSize', 16, 'FontWeight', 'Bold', 'interpreter', 'tex')
 
 axes(ax(3))
 topoplot(mean(mT1topo(ch,tc2),2), chanlocs(ch), 'style', 'map', 'gridscale', 300, 'colormap', cmap_rdbu, ...
     'maplimits', [-4 4], 'emarker',{'.',[.5 .5 .5],[],1},'emarker2',{find(sum(mT1(ch,tc2)>0,2)),'o','k',4,1} );
     format_fig
-    title(['\color[rgb]{',num2str(msCols(2,:)),'}', 'MW', '\color{black}', ' - ', '\color[rgb]{',num2str(msCols(1,:)),'}', 'ON' ], 'FontSize', 16, 'FontWeight', 'Bold', 'interpreter', 'tex')
+    title(['\color[rgb]{',num2str(msCols(2,:)),'}', 'MW', '\color{black}', '-', '\color[rgb]{',num2str(msCols(1,:)),'}', 'ON' ], 'FontSize', 16, 'FontWeight', 'Bold', 'interpreter', 'tex')
 
 axes(ax(4))
 topoplot(mean(mT2topo(ch,tc2),2), chanlocs(ch), 'style', 'map', 'gridscale', 300, 'colormap', cmap_rdbu, ...
     'maplimits', [-4 4], 'emarker',{'.',[.5 .5 .5],[],1} );
     format_fig
-    title(['\color[rgb]{',num2str(msCols(3,:)),'}', 'MB', '\color{black}', ' - ', '\color[rgb]{',num2str(msCols(1,:)),'}', 'ON' ], 'FontSize', 16, 'FontWeight', 'Bold', 'interpreter', 'tex')
+    title(['\color[rgb]{',num2str(msCols(3,:)),'}', 'MB', '\color{black}', '-', '\color[rgb]{',num2str(msCols(1,:)),'}', 'ON' ], 'FontSize', 16, 'FontWeight', 'Bold', 'interpreter', 'tex')
 
 
 % add cbar
@@ -162,7 +162,7 @@ format_fig
 %% adjust positioning
 
 % adjust panel spacing
-posa = { [.09, .71, .2, .3]; [.28, .71, .2, .3]; [.52, .71, .2, .3]; [.71, .71, .2, .3];
+posa = { [.09, .7, .2, .3]; [.28, .7, .2, .3]; [.52, .7, .2, .3]; [.71, .7, .2, .3];
         [.1, .39, .37, .26]; [.26, .39, 0, 0]; [.53, .39, .37, .26]; [.73, .39, 0, 0];
         [.1, .07, .37, .26]; [.26, .07, 0, 0]; [.53, .07, .37, .26]; [.73, .07, 0, 0] };
 
@@ -178,14 +178,13 @@ set(ax,'units','pix')
 
 % adjust figure size for labelling
 posf = get(gcf,'position');
-%set(gcf,'position',[posf(1:2) posf(3)*1.05 posf(4)*1.1])
 
 % add annotations
-annotation("textbox", str="A", FontSize = 22, FontWeight = 'bold', LineStyle = 'none', Position = [0 1 0 0] );
-annotation("textbox", str= sprintf('[%g, %g] ms', tims(tc1(1))*1000, tims(tc1(end))*1000), FontSize = 16, FontWeight = 'bold', LineStyle = 'none', Position = [.17 .785 .5 0] );
-annotation("textbox", str= sprintf('[%g, %g] ms', tims(tc2(1))*1000, tims(tc2(end))*1000), FontSize = 16, FontWeight = 'bold', LineStyle = 'none', Position = [.605 .785 .5 0] );
-annotation("textbox", str="B", FontSize = 22, FontWeight = 'bold', LineStyle = 'none', Position = [0 .71 0 0] );
-annotation("textbox", str="C", FontSize = 22, FontWeight = 'bold', LineStyle = 'none', Position = [.48 .71 0 0] );
+annotation("textbox", str="A", FontSize = 20, FontWeight = 'bold', LineStyle = 'none', Position = [0 1.01 0 0] );
+annotation("textbox", str= sprintf('[%g, %g] ms', tims(tc1(1))*1000, tims(tc1(end))*1000), FontSize = 16, FontWeight = 'bold', LineStyle = 'none', Position = [.175 .77 .5 0] );
+annotation("textbox", str= sprintf('[%g, %g] ms', tims(tc2(1))*1000, tims(tc2(end))*1000), FontSize = 16, FontWeight = 'bold', LineStyle = 'none', Position = [.605 .77 .5 0] );
+annotation("textbox", str="B", FontSize = 20, FontWeight = 'bold', LineStyle = 'none', Position = [0 .72 0 0] );
+annotation("textbox", str="C", FontSize = 20, FontWeight = 'bold', LineStyle = 'none', Position = [.48 .72 0 0] );
 
 
 %% export

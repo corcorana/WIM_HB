@@ -105,7 +105,7 @@ h2pos = get(h2, 'position');
 format_fig
 
 % add annotation
-annotation("textbox", str="A", FontSize = 22, FontWeight = 'bold', LineStyle = 'none', Position = [0 1.04 0 0] );
+annotation("textbox", str="A", FontSize = 20, FontWeight = 'bold', LineStyle = 'none', Position = [0 1.04 0 0] );
 
 set(h1, 'position',[0.14 0.28 h1pos(3:4)], 'box', 'off')
 set(h2, 'position',[0.58 0.28 h2pos(3:4)], 'box', 'off')
@@ -238,7 +238,7 @@ title('EEG frequency band (Hz)', 'FontSize', 12, 'FontWeight', 'Bold')
 set(get(gca,'title'), 'Position', [-4.05, -1.2])
 
 % add labels
-annotation("textbox", str="B", FontSize = 22, FontWeight = 'bold', LineStyle = 'none', Position = [0 .97 0 0] );
+annotation("textbox", str="B", FontSize = 20, FontWeight = 'bold', LineStyle = 'none', Position = [0 .97 0 0] );
 annotation("textbox", str="Attentional State", FontSize = 16, FontWeight = 'bold', LineStyle = 'none', Position = [.395 .925 5 0] );
 
 
@@ -402,13 +402,11 @@ title('EEG frequency band (Hz)', 'FontSize', 12, 'FontWeight', 'Bold')
 set(get(gca,'title'), 'Position', [-4.05, -1.2])
 
 % add labels
-annotation("textbox", str="C", FontSize = 22, FontWeight = 'bold', LineStyle = 'none', Position = [0 1.02 0 0] );
+annotation("textbox", str="C", FontSize = 20, FontWeight = 'bold', LineStyle = 'none', Position = [0 1.02 0 0] );
 annotation("textbox", str="Vigilance Level", FontSize = 16, FontWeight = 'bold', LineStyle = 'none', Position = [.4 .99 5 0] );
 
 
 %% export
 print('figure5_topoVL', '-depsc', '-tiff', '-r600', '-vector')
 print('figure5_topoVL', '-dtiffn', '-r600', '-vector')
-
-
 
