@@ -12,15 +12,15 @@ set_flextable_defaults(fonts_ignore = T)
 source("WIM_HB_IBI_Pup_behav.R", local=knitr::knit_global())
 ```
 
-This document contains summary tables for all generalised additive mixed-effects models reported in the Results section of Corcoran, Le Coz, Hohwy, & Andrillon (2025), 'When your heart isn't in it anymore: Cardiac correlates of task disengagement'.
+This document contains summary tables for all generalised additive mixed-effects models (GAMMs) reported in the Results section of [Corcoran, Le Coz, Hohwy, & Andrillon (2025), 'When your heart isn't in it anymore: Cardiac correlates of task disengagement'](https://doi.org/10.1038/s42003-025-09026-3).
 The original model formula is reproduced above each corresponding table to facilitate cross-referencing with the underlying [analysis code](https://github.com/corcorana/WIM_HB/blob/main/analysis/WIM_HB_IBI_Pup_behav.R).
-Some terms included within the tables have been mildly edited to enhance readability.
+Note, some terms included in the tables have been mildly edited for enhanced readability.
 
 Tables rendered in `R Markdown` using the `knitr` and `flextable` packages.
 
 # Prevalence of disengaged states and impact on behavioural performance
 
-## Time-on-task: Melbourne
+**Table S1. Effect of time-on-task on attentional state (Melbourne dataset).**
 ```{r}
 tot.ms.m$formula[[1]]
 ft <- as_flextable(tot.ms.m) %>%
@@ -41,7 +41,7 @@ ft <- as_flextable(tot.ms.m) %>%
 ft
 ```
 
-## Time-on-task: Paris
+**Table S2. Effect of time-on-task on attentional state (Paris dataset).**
 ```{r}
 tot.ms.p$formula[[1]]
 ft <- as_flextable(tot.ms.p) %>%
@@ -62,7 +62,7 @@ ft <- as_flextable(tot.ms.p) %>%
 ft
 ```
 
-## Vigilance: Melbourne
+**Table S3. Effect of vigilance level on attentional state (Melbourne dataset).**
 ```{r}
 vig.ms.m$formula[[1]]
 ft <- as_flextable(vig.ms.m) %>%
@@ -83,7 +83,7 @@ ft <- as_flextable(vig.ms.m) %>%
 ft
 ```
 
-## Vigilance: Paris
+**Table S4. Effect of vigilance level on attentional state (Paris dataset).**
 ```{r}
 vig.ms.p$formula[[1]]
 ft <- as_flextable(vig.ms.p) %>%
@@ -105,7 +105,7 @@ ft
 ```
 
 
-## Pupil-size: Melbourne
+**Table S5. Effect of pupil size on attentional state (Melbourne dataset).**
 ```{r}
 pup.ms.m$formula[[1]]
 ft <- as_flextable(pup.ms.m) %>%
@@ -126,7 +126,7 @@ ft <- as_flextable(pup.ms.m) %>%
 ft
 ```
 
-## Pupil-size: Paris
+**Table S6. Effect of pupil size on attentional state (Paris dataset).**
 ```{r}
 pup.ms.p$formula[[1]]
 ft <- as_flextable(pup.ms.p) %>%
@@ -148,7 +148,7 @@ ft
 ```
 
 
-## Sensitivity: Melbourne
+**Table S7. Effect of attentional state on sensitivity (Melbourne dataset).**
 ```{r}
 ms.dp.m$formula
 ft <- as_flextable(ms.dp.m) %>%
@@ -165,7 +165,7 @@ ft <- as_flextable(ms.dp.m) %>%
 ft
 ```
 
-## Sensitivity: Paris
+**Table S8. Effect of attentional state on sensitivity (Paris dataset).**
 ```{r}
 ms.dp.p$formula
 ft <- as_flextable(ms.dp.p) %>%
@@ -183,7 +183,7 @@ ft
 ```
 
 
-## Response bias: Melbourne
+**Table S9. Effect of attentional state on response bias (Melbourne dataset).**
 ```{r}
 ms.cn.m$formula
 ft <- as_flextable(ms.cn.m) %>%
@@ -200,7 +200,7 @@ ft <- as_flextable(ms.cn.m) %>%
 ft
 ```
 
-## Response bias: Paris
+**Table S10. Effect of attentional state on response bias (Paris dataset).**
 ```{r}
 ms.cn.p$formula
 ft <- as_flextable(ms.cn.p) %>%
@@ -218,7 +218,7 @@ ft
 ```
 
 
-## Response speed: Melbourne
+**Table S11. Effect of attentional state on response speed (Melbourne dataset).**
 ```{r}
 ms.rs.m$formula
 ft <- as_flextable(ms.rs.m) %>%
@@ -235,7 +235,7 @@ ft <- as_flextable(ms.rs.m) %>%
 ft
 ```
 
-## Response speed: Paris
+**Table S12. Effect of attentional state on response speed (Paris dataset).**
 ```{r}
 ms.rs.p$formula
 ft <- as_flextable(ms.rs.p) %>%
@@ -253,7 +253,7 @@ ft
 ```
 
 
-## Response speed variability: Melbourne
+**Table S13. Effect of attentional state on response speed variability (Melbourne dataset).**
 ```{r}
 ms.rv.m$formula
 ft <- as_flextable(ms.rv.m) %>%
@@ -270,7 +270,7 @@ ft <- as_flextable(ms.rv.m) %>%
 ft
 ```
 
-## Response speed variability: Paris
+**Table S14. Effect of attentional state on response speed variability (Paris dataset).**
 ```{r}
 ms.rv.p$formula
 ft <- as_flextable(ms.rv.p) %>%
@@ -289,7 +289,7 @@ ft
 
 # Cardiac measures afford complementary information about arousal, attentional, and behavioural states
 
-## Attentional state
+**Table S15. Effect of cardiac parameters on attentional state.**
 ```{r}
 ibi.ms$formula[[1]]
 ibi.ms$formula[[2]]
@@ -315,7 +315,7 @@ ft <- as_flextable(ibi.ms) %>%
 ft
 ```
 
-## Vigilance
+**Table S16. Effect of cardiac parameters on vigilance level.**
 ```{r}
 ibi.vo$formula
 ft <- as_flextable(ibi.vo) %>%
@@ -331,7 +331,7 @@ ft <- as_flextable(ibi.vo) %>%
 ft
 ```
 
-## Pupil-size
+**Table S17. Effect of cardiac parameters on pupil size.**
 ```{r}
 ibi.pz$formula
 ft <- as_flextable(ibi.pz) %>%
@@ -348,7 +348,7 @@ ft
 ```
 
 
-## Sensitivity
+**Table S18. Effect of cardiac parameters on sensitivity.**
 ```{r}
 ibi.dp$formula
 ft <- as_flextable(ibi.dp) %>%
@@ -364,7 +364,7 @@ ft <- as_flextable(ibi.dp) %>%
 ft
 ```
 
-## Response-bias
+**Table S19. Effect of cardiac parameters on response bias.**
 ```{r}
 ibi.cn$formula
 ft <- as_flextable(ibi.cn) %>%
@@ -381,7 +381,7 @@ ft
 ```
 
 
-## Hit rate
+**Table S20. Effect of cardiac parameters on hit rate.**
 ```{r}
 ibi.hr$formula
 ft <- as_flextable(ibi.hr) %>%
@@ -398,7 +398,7 @@ ft
 ```
 
 
-## False alarm rate
+**Table S21. Effect of cardiac parameters on false alarm rate.**
 ```{r}
 ibi.fa$formula
 ft <- as_flextable(ibi.fa) %>%
@@ -415,7 +415,7 @@ ft
 ```
 
 
-## Response speed
+**Table S22. Effect of cardiac parameters on response speed.**
 ```{r}
 ibi.rs$formula
 ft <- as_flextable(ibi.rs) %>%
@@ -432,7 +432,7 @@ ft
 ```
 
 
-## Response speed variability
+**Table S23. Effect of cardiac parameters on response speed variability.**
 ```{r}
 ibi.rv$formula
 ft <- as_flextable(ibi.rv) %>%
@@ -451,11 +451,14 @@ ft
 
 # Error-related cardiac deceleration does not account for differences across attentional states
 
+**Table S24. Analysis-of-variance of fitted GAMM.**
 ```{r}
 nogo$formula
-
 anova.gam(nogo)
+```
 
+**Table S25. Summary of fitted GAMM.**
+```{r}
 ft <- as_flextable(nogo) %>%
   set_header_labels(Estimate = "beta", Std.Error = "s.e.", t.value = "t-stat") %>%
   mk_par( part = "body", j = "Term", i = 1, value = as_paragraph("(Intercept)") ) %>% 

@@ -2,7 +2,7 @@
 
 Welcome to the GitHub repository for **When your heart isn't in it anymore: Cardiac correlates of task disengagement**, a combined EEG-ECG-pupillometry study of brain-body interaction during spontaneous cognition.
 
-This repository contains the scripts and functions required to reproduce the analyses reported in the associated publication and [preprint](https://www.biorxiv.org/content/10.1101/2024.06.21.599851v2).
+This repository contains the scripts and functions required to reproduce the analyses reported in the associated [publication](https://doi.org/10.1038/s42003-025-09026-3) and corresponding [preprint](https://www.biorxiv.org/content/10.1101/2024.06.21.599851v2).
 You can access the data files on which these scripts operate from the accompanying OSF repositories: [Melbourne data](https://osf.io/ey3ca/); [Paris data](https://osf.io/v9xsw/).
 
 ## Directions
@@ -32,9 +32,10 @@ If the materials archived here are useful for your own research, please cite thi
 Please also cite the accompanying manuscript:
 
 > Corcoran, A.W., Le Coz, A., Hohwy, J., & Andrillon, T.
-> (in press).
+> (2025).
 > When your heart isn't in it anymore: Cardiac correlates of task disengagement.
-> *Communications Biology*.
+> *Communications Biology*. 
+> https://doi.org/10.1038/s42003-025-09026-3
 
 ## Current release
 
