@@ -34,7 +34,7 @@ Please also cite the accompanying manuscript:
 > Corcoran, A.W., Le Coz, A., Hohwy, J., & Andrillon, T.
 > (2025).
 > When your heart isn't in it anymore: Cardiac correlates of task disengagement.
-> *Communications Biology*. 
+> *Communications Biology, 8*, 1646. 
 > https://doi.org/10.1038/s42003-025-09026-3
 
 ## Current release
